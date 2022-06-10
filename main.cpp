@@ -64,6 +64,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//ゲームループ
 	while (true)
 	{
+#pragma region メッセージ処理
+
 		//メッセージがある？
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
@@ -76,6 +78,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		{
 			break;
 		}
+#pragma endregion
 
 #pragma region DirectX舞フレーム処理
 
