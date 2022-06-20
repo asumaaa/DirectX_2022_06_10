@@ -239,7 +239,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 #pragma endregion
 
-#pragma region DirectX舞フレーム処理
+#pragma region DirectX毎フレーム処理
+		//バックバッファの番号を取得(2つなので0番か1番)
+		/*UINT bbIndex = swapChain->GetCurrentBackBufferIndex();*/
 
 #pragma endregion
 
