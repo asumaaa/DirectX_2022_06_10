@@ -1,5 +1,8 @@
-#include "Windows.h"
 #include "main.h"
+
+#pragma comment(lib,"d3d12.lib")
+#pragma comment(lib,"dxgi.lib")
+
 
 //ウィンドウプロシージャ
 LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -58,6 +61,98 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	MSG msg{};	//メッセージ
 
 #pragma region DirectX初期化処理
+
+	//DirectX初期化用の変数
+	HRESULT result;
+	ID3D12Device* device = nullptr;
+	IDXGIFactory7* dxgiFactory = nullptr;
+	IDXGISwapChain* swapChain = nullptr;
+	ID3D12CommandAllocator* commandAllocator = nullptr;
+	ID3D12GraphicsCommandList* commandList = nullptr;
+	ID3D12CommandQueue* commandQueue = nullptr;
+	ID3D12DescriptorHeap* rtvHeap = nullptr;
+
+	//DXGIファクトリーの生成
+	result = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
+	assert(SUCCEEDED(result));
+
+	//アダプターの列挙用
+	std::vector<IDXGIAdapter4*>adapters;
+	//ここに特定の名前を持つアダプターオブジェクトが入る
+	IDXGIAdapter4* tmpAdapter = nullptr;
+
+	//パフォーマンスが高いものから順に、すべてのアダプターを列挙する
+	for (UINT i = 0;
+		dxgiFactory->EnumAdapterByGpuPreference(
+			i,
+			DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
+			IID_PPV_ARGS(&tmpAdapter)) != DXGI_ERROR_NOT_FOUND;
+		i++)
+	{
+		//動的配列に追加する
+		adapters.push_back(tmpAdapter);
+	}
+
+	//妥当なアダプターを選別する
+	for (size_t i = 0; i < adapters.size(); i++)
+	{
+		DXGI_ADAPTER_DESC3 adapterDesc;
+		//アダプターの情報を取得する
+		adapters[i]->GetDesc3(&adapterDesc);
+
+		//ソフトウェアデバイスを回避
+		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE))
+		{
+			//デバイスを採用してループを抜ける
+			tmpAdapter = adapters[i];
+			break;
+		}
+	}
+
+	//対応レベルの生成
+	D3D_FEATURE_LEVEL levels[] =
+	{
+		D3D_FEATURE_LEVEL_12_1,
+		D3D_FEATURE_LEVEL_12_0,
+		D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_0,
+	};
+
+	D3D_FEATURE_LEVEL featureLevel;
+
+	for (size_t i = 0; i < _countof(levels); i++)
+	{
+		//採用したアダプターをデバイスで生成
+		result = D3D12CreateDevice(tmpAdapter, levels[i],
+			IID_PPV_ARGS(&device));
+		if (result == S_OK)
+		{
+			//デバイス生成できた時点でループを抜ける
+			featureLevel = levels[i];
+			break;
+		}
+	}
+
+	//コマンドアロケータを生成
+	result = device->CreateCommandAllocator(
+		D3D12_COMMAND_LIST_TYPE_DIRECT,
+		IID_PPV_ARGS(&commandAllocator));
+	assert(SUCCEEDED(result));
+
+	//コマンドリストを生成
+	result = device->CreateCommandList(
+		0,
+		D3D12_COMMAND_LIST_TYPE_DIRECT,
+		commandAllocator,
+		nullptr,
+		IID_PPV_ARGS(&commandList));
+	assert(SUCCEEDED(result));
+
+	//コマンドキューに設定
+	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
+	//コマンドキューを生成
+	result = device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue));
+	assert(SUCCEEDED(result));
 
 #pragma endregion
 
