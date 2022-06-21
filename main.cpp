@@ -242,9 +242,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		{-0.5f,-0.5f,0.0f},	//左下
 		{-0.5f,+0.5f,0.0f},	//左上
 		{+0.5f,-0.5f,0.0f},	//右下
-		{+0.5f,-0.5f,0.0f},	//右下
-		{-0.5f,+0.5f,0.0f},	//左上
 		{+0.5f,+0.5f,0.0f},	//右上
+	};
+	//インデックスデータ
+	uint16_t indices[] =
+	{
+		0,1,2,	//三角形1つ目
+		1,2,3,	//三角形2つ目
 	};
 	//頂点データ全体のサイズ
 	UINT sizeVB = static_cast<UINT>(sizeof(XMFLOAT3) * _countof(vertices));
@@ -274,6 +278,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	);
 	assert(SUCCEEDED(result));
 
+	
+	//インデックスバッファ
+	//インデックスバッファ全体のサイズ
+	UINT sizeIB = static_cast<UINT>(sizeof(uint16_t) * _countof(indices));
+
+	//リソース設定
+	resDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resDesc.Width = sizeIB;	//インデックス情報が入る分のサイズ
+	resDesc.Height = 1;
+	resDesc.DepthOrArraySize = 1;
+	resDesc.MipLevels = 1;
+	resDesc.SampleDesc.Count = 1;
+	resDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	//インデックスバッファの生成
+	ID3D12Resource* indexBuff = nullptr;
+	result = device->CreateCommittedResource(
+		&heapProp,	//ヒープ設定
+		D3D12_HEAP_FLAG_NONE,
+		&resDesc,	//リソース設定
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&indexBuff)
+	);
+
 	//頂点バッファへのデータ転送
 	//GPU上のバッファに対応した仮想メモリ（メインメモリ上）を取得
 	XMFLOAT3* vertMap = nullptr;
@@ -287,6 +316,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//つながりを解除
 	vertBuff->Unmap(0, nullptr);
 
+	//インデックスバッファをマッピング
+	uint16_t* indexMap = nullptr;
+	result = indexBuff->Map(0, nullptr, (void**)&indexMap);
+	//全インデックスに対して
+	for (int i = 0; i < _countof(indices); i++)
+	{
+		indexMap[i] = indices[i];	//インデックスをコピー
+	}
+	//マッピング解除
+	indexBuff->Unmap(0, nullptr);
+
 
 	//頂点バッファビューの作成
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
@@ -296,6 +336,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	vbView.SizeInBytes = sizeVB;
 	//頂点１つ分びデータサイズ
 	vbView.StrideInBytes = sizeof(XMFLOAT3);
+
+	//インデックスバッファビューの作成
+	D3D12_INDEX_BUFFER_VIEW ibView{};
+	ibView.BufferLocation = indexBuff->GetGPUVirtualAddress();
+	ibView.Format = DXGI_FORMAT_R16_UINT;
+	ibView.SizeInBytes = sizeIB;
 
 
 	ID3DBlob* vsBlob = nullptr;	//頂点シェーダーオブジェクト
@@ -510,7 +556,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	result = constBuffMaterial->Map(0, nullptr, (void**)&constMapMaterial);	//マッピング
 	assert(SUCCEEDED(result));
 	//値を書き込むと自動的に転送される
-	constMapMaterial->color = XMFLOAT4(1, 0, 0, 0.5f);
+	constMapMaterial->color = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f);
 
 #pragma endregion
 
@@ -600,9 +646,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		commandList->IASetVertexBuffers(0, 1, &vbView);
 		//定数バッファビュー(CBV)の設定コマンド
 		commandList->SetGraphicsRootConstantBufferView(0, constBuffMaterial->GetGPUVirtualAddress());
+		//インデックスバッファビューの設定コマンド
+		commandList->IASetIndexBuffer(&ibView);
 		
 		//描画コマンド
-		commandList->DrawInstanced(_countof(vertices), 1, 0, 0);	//全ての頂点を使って描画
+		commandList->DrawIndexedInstanced(_countof(indices), 1, 0, 0, 0);	//全ての頂点を使って描画
 
 
 
