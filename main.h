@@ -38,3 +38,10 @@ ID3D12DescriptorHeap* rtvHeap = nullptr;
 struct ConstBufferDataMaterial {
 	XMFLOAT4 color;	//色(RGBA)
 };
+
+//頂点データ構造体
+struct Vertex
+{
+	XMFLOAT3 pos;	//座標
+	XMFLOAT2 uv;	//uv座標
+};

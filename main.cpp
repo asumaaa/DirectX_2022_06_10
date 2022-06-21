@@ -238,20 +238,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #pragma region 描画処理初期化
 
 	//頂点データ
-	XMFLOAT3 vertices[] = {
-		{-0.5f,-0.5f,0.0f},	//左下
-		{-0.5f,+0.5f,0.0f},	//左上
-		{+0.5f,-0.5f,0.0f},	//右下
-		{+0.5f,+0.5f,0.0f},	//右上
+	Vertex vertices[] = {
+		{{-0.5f,-0.5f,0.0f},{0.0f,1.0f} },	//左下
+		{{-0.5f,+0.5f,0.0f},{0.0f,0.0f} },	//左上
+		{{+0.5f,-0.5f,0.0f},{1.0f,1.0f} },	//右下
+		{{+0.5f,+0.5f,0.0f},{1.0f,0.0f} },	//右上
 	};
 	//インデックスデータ
-	uint16_t indices[] =
+	unsigned short indices[] =
 	{
 		0,1,2,	//三角形1つ目
 		1,2,3,	//三角形2つ目
 	};
 	//頂点データ全体のサイズ
-	UINT sizeVB = static_cast<UINT>(sizeof(XMFLOAT3) * _countof(vertices));
+	UINT sizeVB = static_cast<UINT>(sizeof(vertices[0]) * _countof(vertices));
 
 	//頂点バッファの設定
 	D3D12_HEAP_PROPERTIES heapProp{};	//ヒープ設定
@@ -305,7 +305,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	//頂点バッファへのデータ転送
 	//GPU上のバッファに対応した仮想メモリ（メインメモリ上）を取得
-	XMFLOAT3* vertMap = nullptr;
+	Vertex* vertMap = nullptr;
 	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
 	assert(SUCCEEDED(result));
 	//全頂点に対して
@@ -334,8 +334,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
 	//頂点バッファのサイズ
 	vbView.SizeInBytes = sizeVB;
-	//頂点１つ分びデータサイズ
-	vbView.StrideInBytes = sizeof(XMFLOAT3);
+	//頂点１つ分のデータサイズ
+	vbView.StrideInBytes = sizeof(vertices[0]);
 
 	//インデックスバッファビューの作成
 	D3D12_INDEX_BUFFER_VIEW ibView{};
@@ -414,7 +414,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//頂点レイアウト
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] =
 	{
-		{
+		{	//xyz座標
 			"POSITION",
 			0,
 			DXGI_FORMAT_R32G32B32_FLOAT,
@@ -422,7 +422,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			D3D12_APPEND_ALIGNED_ELEMENT,
 			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
 			0
-		}
+		},
+		{
+			"TEXCOORD",
+			0,
+			DXGI_FORMAT_R32G32_FLOAT,
+			0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+			0
+		},
 	};
 
 	//グラフィックスパイプライン
@@ -556,7 +565,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	result = constBuffMaterial->Map(0, nullptr, (void**)&constMapMaterial);	//マッピング
 	assert(SUCCEEDED(result));
 	//値を書き込むと自動的に転送される
-	constMapMaterial->color = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f);
+	constMapMaterial->color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
 #pragma endregion
 

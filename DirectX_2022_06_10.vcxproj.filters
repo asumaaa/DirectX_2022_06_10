@@ -30,4 +30,7 @@
     </FxCompile>
     <FxCompile Include="BasicPS.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Basic.hlsli" />
+  </ItemGroup>
 </Project>
