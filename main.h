@@ -33,3 +33,8 @@ ID3D12CommandAllocator* commandAllocator = nullptr;
 ID3D12GraphicsCommandList* commandList = nullptr;
 ID3D12CommandQueue* commandQueue = nullptr;
 ID3D12DescriptorHeap* rtvHeap = nullptr;
+
+//定数バッファ用データ構造体(マテリアル)
+struct ConstBufferDataMaterial {
+	XMFLOAT4 color;	//色(RGBA)
+};
