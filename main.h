@@ -9,6 +9,7 @@
 #include "d3dcompiler.h"
 #include "dinput.h"
 #include "assert.h"
+#include "DirectXTex.h"
 
 #define DIRECTINPUT_VERSION	0x0800	//DirectInputtのバージョン指定
 
