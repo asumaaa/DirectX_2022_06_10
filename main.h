@@ -10,6 +10,8 @@
 #include "dinput.h"
 #include "assert.h"
 #include "DirectXTex.h"
+#include "texture.h"
+
 
 #define DIRECTINPUT_VERSION	0x0800	//DirectInputtのバージョン指定
 
@@ -38,11 +40,4 @@ ID3D12DescriptorHeap* rtvHeap = nullptr;
 //定数バッファ用データ構造体(マテリアル)
 struct ConstBufferDataMaterial {
 	XMFLOAT4 color;	//色(RGBA)
-};
-
-//頂点データ構造体
-struct Vertex
-{
-	XMFLOAT3 pos;	//座標
-	XMFLOAT2 uv;	//uv座標
 };
