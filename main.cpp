@@ -240,10 +240,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	//頂点データ
 	Vertex vertices[] = {
-		{{-50.0f,-50.0f,50.0f},{0.0f,1.0f} },	//左下
-		{{-50.0f, 50.0f,50.0f},{0.0f,0.0f} },	//左上
-		{{ 50.0f,-50.0f,50.0f},{1.0f,1.0f} },	//右下
-		{{ 50.0f, 50.0f,50.0f},{1.0f,0.0f} },	//右上
+		{{-50.0f,-50.0f,0.0f},{0.0f,1.0f} },	//左下
+		{{-50.0f, 50.0f,0.0f},{0.0f,0.0f} },	//左上
+		{{ 50.0f,-50.0f,0.0f},{1.0f,1.0f} },	//右下
+		{{ 50.0f, 50.0f,0.0f},{1.0f,0.0f} },	//右上
 	};
 	//インデックスデータ
 	unsigned short indices[] =
@@ -774,13 +774,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		window_height, 0.0f,
 		0.0f, 1.0f
 	);*/
+	////透視投影行列の計算
+	//constMapTransform->mat = XMMatrixPerspectiveFovLH(
+	//	XMConvertToRadians(45.0f),			//上下画角45度
+	//	(float)window_width / window_height,//アスペクト比(画面横幅/画面立幅)
+	//	0.1f,1000.0f						//前端、奥端
+	//);
 
-	//透視投影行列の計算
-	constMapTransform->mat = XMMatrixPerspectiveFovLH(
+	XMMATRIX matProjection = XMMatrixPerspectiveFovLH(
 		XMConvertToRadians(45.0f),			//上下画角45度
 		(float)window_width / window_height,//アスペクト比(画面横幅/画面立幅)
-		0.1f,1000.0f						//前端、奥端
+		0.1f, 1000.0f						//前端、奥端
 	);
+
+	//ビュー変換行列
+	XMMATRIX matView;
+	XMFLOAT3 eye(0, 0, -100);
+	XMFLOAT3 target(0, 0, 0);
+	XMFLOAT3 up(0, 1, 0);
+	matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+
+	constMapTransform->mat = matView * matProjection;
 
 #pragma endregion
 
@@ -811,10 +825,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		BYTE key[256] = {};
 		keyboard->GetDeviceState(sizeof(key), key);
 
-		if (key[DIK_0])
+		if (key[DIK_D] || key[DIK_A])
 		{
-			OutputDebugStringA("Hit 0\n");
+			if (key[DIK_D]) {
+				angle += XMConvertToRadians(1.0f);
+			}
+			else if (key[DIK_A]) {
+				angle -= XMConvertToRadians(1.0f);
+			}
+
+			//angleラジアンだけY軸周りに回転
+			eye.x = -100 * sinf(angle);
+			eye.z = -100 * cosf(angle);
+
+			//ビュー行列を作り直す
+			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
 		}
+
+		constMapTransform->mat = matView * matProjection;
 
 		//バックバッファの番号を取得(2つなので0番か1番)
 		UINT bbIndex = swapChain->GetCurrentBackBufferIndex();

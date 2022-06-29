@@ -52,3 +52,6 @@ struct Vertex
 	XMFLOAT3 pos;	//À•W
 	XMFLOAT2 uv;	//uvÀ•W
 };
+
+//ƒJƒƒ‰‚Ì‰ñ“]Šp
+float angle = 0.0f;
