@@ -7,7 +7,7 @@ LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg)
 	{
-	//ウィンドウが破棄された
+		//ウィンドウが破棄された
 	case WM_DESTROY:
 		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
@@ -274,25 +274,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//インデックスデータ
 	unsigned short indices[] =
 	{
-		//前
-		0,1,2,	//三角形1つ目
-		1,2,3,	//三角形2つ目
-		//後ろ
-		4,5,6,
-		5,6,7,
-		//左
-		0,4,1,
-		4,1,5,
-		////右
-		2,6,3,
-		6,3,7,
-		//下
-		0,4,2,
-		4,2,6,
-		//上
-		1,5,3,
-		5,3,7,
 
+		//左
+		//0,1,4,
+		//1,5,4,
+		//前
+		//0,1,2,	//三角形1つ目
+		//1,2,3,	//三角形2つ目
+		
+		////右
+		//2,6,3,
+		0, 1,2,
+		6,3,7,
+
+		////下
+		//0,4,2,
+		//4,2,6,
+
+		////上
+		//1,5,3,
+		//5,3,7,
+
+		////後ろ
+	/*	4,5,6,
+		5,6,7,*/
 		/*4,5,2,
 		5,2,3,*/
 	};
@@ -324,7 +329,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	);
 	assert(SUCCEEDED(result));
 
-	
+
 	//インデックスバッファ
 	//インデックスバッファ全体のサイズ
 	UINT sizeIB = static_cast<UINT>(sizeof(uint16_t) * _countof(indices));
@@ -800,7 +805,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&constBuffTransform)
-		);
+	);
 	assert(SUCCEEDED(result));
 	//定数バッファのマッピング
 	result = constBuffTransform->Map(0, nullptr, (void**)&constMapTransform);
@@ -819,19 +824,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		window_height, 0.0f,
 		0.0f, 1.0f
 	);*/
-	////透視投影行列の計算
-	//constMapTransform->mat = XMMatrixPerspectiveFovLH(
-	//	XMConvertToRadians(45.0f),			//上下画角45度
-	//	(float)window_width / window_height,//アスペクト比(画面横幅/画面立幅)
-	//	0.1f,1000.0f						//前端、奥端
-	//);
-
-	//射影変換
+	//透視投影行列の計算
 	XMMATRIX matProjection = XMMatrixPerspectiveFovLH(
 		XMConvertToRadians(45.0f),			//上下画角45度
 		(float)window_width / window_height,//アスペクト比(画面横幅/画面立幅)
-		0.1f, 1000.0f						//前端、奥端
+		0.1f,1000.0f						//前端、奥端
 	);
+
+	////射影変換
+	//XMMATRIX matProjection = XMMatrixPerspectiveFovLH(
+	//	XMConvertToRadians(45.0f),			//上下画角45度
+	//	(float)window_width / window_height,//アスペクト比(画面横幅/画面立幅)
+	//	0.1f, 1000.0f						//前端、奥端
+	//);
 
 	//ビュー変換行列
 	XMMATRIX matView;
@@ -898,21 +903,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		BYTE key[256] = {};
 		keyboard->GetDeviceState(sizeof(key), key);
 
-		if (key[DIK_D] || key[DIK_A])
+		if (key[DIK_D] || key[DIK_A] || key[DIK_W] || key[DIK_S])
 		{
 			if (key[DIK_D]) {
-				angle += XMConvertToRadians(1.0f);
+				rotation.y += XMConvertToRadians(1.0f);
 			}
 			else if (key[DIK_A]) {
-				angle -= XMConvertToRadians(1.0f);
+				rotation.y -= XMConvertToRadians(1.0f);
 			}
 
-			//angleラジアンだけY軸周りに回転
-			eye.x = -100 * sinf(angle);
-			eye.z = -100 * cosf(angle);
-
-			//ビュー行列を作り直す
-			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+			if (key[DIK_W]) {
+				rotation.x += XMConvertToRadians(1.0f);
+			}
+			else if (key[DIK_S]) {
+				rotation.x -= XMConvertToRadians(1.0f);
+			}
 		}
 
 		//座標を移動する処理
@@ -962,7 +967,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
 		// 4. 描画コマンド
-	
+
 		//ビューポート設定コマンド
 		D3D12_VIEWPORT viewport{};
 		viewport.Width = window_width;
@@ -1005,7 +1010,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		commandList->SetGraphicsRootConstantBufferView(2, constBuffTransform->GetGPUVirtualAddress());
 		//インデックスバッファビューの設定コマンド
 		commandList->IASetIndexBuffer(&ibView);
-		
+
 		//描画コマンド
 		commandList->DrawIndexedInstanced(_countof(indices), 1, 0, 0, 0);	//全ての頂点を使って描画
 
