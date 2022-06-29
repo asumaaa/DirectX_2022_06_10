@@ -745,7 +745,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		cbResourceDesc.DepthOrArraySize = 1;
 		cbResourceDesc.MipLevels = 1;
 		cbResourceDesc.SampleDesc.Count = 1;
-		cbResourceDesc.Layout - D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		cbResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	}
 	//定数バッファの生成
 	result = device->CreateCommittedResource(
@@ -781,6 +781,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//	0.1f,1000.0f						//前端、奥端
 	//);
 
+	//射影変換
 	XMMATRIX matProjection = XMMatrixPerspectiveFovLH(
 		XMConvertToRadians(45.0f),			//上下画角45度
 		(float)window_width / window_height,//アスペクト比(画面横幅/画面立幅)
@@ -794,7 +795,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	XMFLOAT3 up(0, 1, 0);
 	matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
 
-	constMapTransform->mat = matView * matProjection;
+	//スケーリング倍率
+	XMFLOAT3 scale = { 1.0f,1.0f ,1.0f };
+	//回転角
+	XMFLOAT3 rotation = { 0.0f, 0.0f, 0.0f };
+	//座標
+	XMFLOAT3 position = { 0.0f,  0.0f,  0.0f };
+
+	//ワールド行列変換
+	XMMATRIX matWorld;
+	matWorld = XMMatrixIdentity();
+	//スケーリング行列
+	XMMATRIX matScale;
+	matScale = XMMatrixScaling(1.0f, 0.5f, 1.0f);
+	matWorld *= matScale;
+	//回転行列
+	XMMATRIX matRot;
+	matRot = XMMatrixIdentity();
+	matRot *= XMMatrixRotationZ(XMConvertToRadians(0.0f));
+	matRot *= XMMatrixRotationX(XMConvertToRadians(15.0f));
+	matRot *= XMMatrixRotationY(XMConvertToRadians(30.0f));
+	matWorld *= matRot;
+	//平行移動行列
+	XMMATRIX matTrans;
+	matTrans = XMMatrixTranslation(-50.0f, 0, 0);
+	matWorld *= matTrans;
+
+	//行列の合成
+	constMapTransform->mat = matWorld * matView * matProjection;
 
 #pragma endregion
 
@@ -842,7 +870,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
 		}
 
-		constMapTransform->mat = matView * matProjection;
+		//座標を移動する処理
+		if (key[DIK_UP] || key[DIK_DOWN] || key[DIK_RIGHT] || key[DIK_LEFT])
+		{
+			if (key[DIK_UP]) { position.z += 1.0f; }
+			else if (key[DIK_DOWN]) { position.z -= 1.0f; }
+			if (key[DIK_RIGHT]) { position.x += 1.0f; }
+			else if (key[DIK_LEFT]) { position.x -= 1.0f; }
+
+		}
+
+		matTrans = XMMatrixTranslation(position.x, position.y, position.z);
+
+		matScale = XMMatrixScaling(scale.x, scale.y, scale.z);
+
+		matRot = XMMatrixIdentity();
+		matRot *= XMMatrixRotationZ(rotation.z);
+		matRot *= XMMatrixRotationX(rotation.x);
+		matRot *= XMMatrixRotationY(rotation.y);
+
+		matWorld = XMMatrixIdentity();
+		matWorld *= matScale;
+		matWorld *= matRot;
+		matWorld *= matTrans;
+
+		constMapTransform->mat = matWorld * matView * matProjection;
 
 		//バックバッファの番号を取得(2つなので0番か1番)
 		UINT bbIndex = swapChain->GetCurrentBackBufferIndex();
