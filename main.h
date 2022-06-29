@@ -40,6 +40,12 @@ struct ConstBufferDataMaterial {
 	XMFLOAT4 color;	//色(RGBA)
 };
 
+//定数バッファ用データ構造体（3D変換行列）
+struct ConstBufferDataTransform
+{
+	XMMATRIX mat;
+};
+
 //頂点データ構造体
 struct Vertex
 {
