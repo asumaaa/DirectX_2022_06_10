@@ -279,7 +279,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	);
 	assert(SUCCEEDED(result));
 
-	
+
 	//インデックスバッファ
 	//インデックスバッファ全体のサイズ
 	UINT sizeIB = static_cast<UINT>(sizeof(uint16_t) * _countof(indices));
@@ -755,10 +755,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&constBuffTransform)
-		);
+	);
 	assert(SUCCEEDED(result));
 	//定数バッファのマッピング
-	result = constBuffTransform->Map(0, nullptr, (void**)&constMapTransform);
+	result = constBuffTransform->Map(0, nullptr, (void**)&mat);
 	assert(SUCCEEDED(result));
 
 	//単位行列を代入
@@ -782,47 +782,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//);
 
 	//射影変換
-	XMMATRIX matProjection = XMMatrixPerspectiveFovLH(
-		XMConvertToRadians(45.0f),			//上下画角45度
-		(float)window_width / window_height,//アスペクト比(画面横幅/画面立幅)
-		0.1f, 1000.0f						//前端、奥端
-	);
+	Matrix4 matProjection;
+	matProjection.Initialize();
+	matProjection.Perspective(XMConvertToRadians(45.0f), (float)window_width / window_height, 0.1f, 1000.0f);
 
 	//ビュー変換行列
-	XMMATRIX matView;
-	XMFLOAT3 eye(0, 0, -100);
-	XMFLOAT3 target(0, 0, 0);
-	XMFLOAT3 up(0, 1, 0);
-	matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+	Matrix4 matView;
+	matView.Initialize();
+	Vector3 eye = { 0, 0, -100 };
+	Vector3 target = {0, 0, 0};
+	Vector3 up = { 0, 1, 0 };
+	/*matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));*/
 
 	//スケーリング倍率
-	XMFLOAT3 scale = { 1.0f,1.0f ,1.0f };
+	Vector3 scale = { 1.0f,1.0f ,1.0f };
 	//回転角
-	XMFLOAT3 rotation = { 0.0f, 0.0f, 0.0f };
+	Vector3 rotation = { 0.0f, 0.0f, 0.0f };
 	//座標
-	XMFLOAT3 position = { 0.0f,  0.0f,  0.0f };
+	Vector3 position = { 0.0f,  0.0f,  0.0f };
 
 	//ワールド行列変換
-	XMMATRIX matWorld;
-	matWorld = XMMatrixIdentity();
-	//スケーリング行列
-	XMMATRIX matScale;
-	matScale = XMMatrixScaling(1.0f, 0.5f, 1.0f);
-	matWorld *= matScale;
-	//回転行列
-	XMMATRIX matRot;
-	matRot = XMMatrixIdentity();
-	matRot *= XMMatrixRotationZ(XMConvertToRadians(0.0f));
-	matRot *= XMMatrixRotationX(XMConvertToRadians(15.0f));
-	matRot *= XMMatrixRotationY(XMConvertToRadians(30.0f));
-	matWorld *= matRot;
-	//平行移動行列
-	XMMATRIX matTrans;
-	matTrans = XMMatrixTranslation(-50.0f, 0, 0);
-	matWorld *= matTrans;
-
-	//行列の合成
-	constMapTransform->mat = matWorld * matView * matProjection;
+	Matrix4 matWorld;
+	matWorld.Initialize();
 
 #pragma endregion
 
@@ -853,21 +834,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		BYTE key[256] = {};
 		keyboard->GetDeviceState(sizeof(key), key);
 
-		if (key[DIK_D] || key[DIK_A])
+		//キーボード入力による操作
+		if (key[DIK_D] || key[DIK_A] || key[DIK_W] || key[DIK_S])
 		{
 			if (key[DIK_D]) {
-				angle += XMConvertToRadians(1.0f);
+				rotation.y -= XMConvertToRadians(1.0f);
 			}
 			else if (key[DIK_A]) {
-				angle -= XMConvertToRadians(1.0f);
+				rotation.y += XMConvertToRadians(1.0f);
 			}
-
-			//angleラジアンだけY軸周りに回転
-			eye.x = -100 * sinf(angle);
-			eye.z = -100 * cosf(angle);
-
-			//ビュー行列を作り直す
-			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+			if (key[DIK_W]) {
+				rotation.x += XMConvertToRadians(1.0f);
+			}
+			else if (key[DIK_S]) {
+				rotation.x -= XMConvertToRadians(1.0f);
+			}
 		}
 
 		//座標を移動する処理
@@ -880,21 +861,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		}
 
-		matTrans = XMMatrixTranslation(position.x, position.y, position.z);
+		//ワールド変換行列に単位行列に各行列を合成
+		matWorld.Initialize();
+		matWorld.scale(scale.x, scale.y, scale.z);
+		matWorld.rotation(rotation.x, rotation.y, rotation.z);
+		matWorld.move(position.x, position.y, position.z);
 
-		matScale = XMMatrixScaling(scale.x, scale.y, scale.z);
-
-		matRot = XMMatrixIdentity();
-		matRot *= XMMatrixRotationZ(rotation.z);
-		matRot *= XMMatrixRotationX(rotation.x);
-		matRot *= XMMatrixRotationY(rotation.y);
-
-		matWorld = XMMatrixIdentity();
-		matWorld *= matScale;
-		matWorld *= matRot;
-		matWorld *= matTrans;
-
-		constMapTransform->mat = matWorld * matView * matProjection;
+		//各行列を合成
+		mat.Initialize();
+		mat.matrixUpdate(matWorld);
+		mat.matrixUpdate(matView);
+		mat.matrixUpdate(matProjection);
 
 		//バックバッファの番号を取得(2つなので0番か1番)
 		UINT bbIndex = swapChain->GetCurrentBackBufferIndex();

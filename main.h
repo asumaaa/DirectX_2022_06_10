@@ -10,6 +10,7 @@
 #include "dinput.h"
 #include "assert.h"
 #include "DirectXTex.h"
+#include "matrix.h"
 
 #define DIRECTINPUT_VERSION	0x0800	//DirectInputtのバージョン指定
 
@@ -56,5 +57,4 @@ struct Vertex
 //カメラの回転角
 float angle = 0.0f;
 
-//座標
-XMFLOAT3 position = { 0.0f,0.0f,0.0f };
+Matrix4 mat;
