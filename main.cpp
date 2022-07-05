@@ -804,7 +804,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//回転角
 	XMFLOAT3 rotation = { 0.0f, 0.0f, 0.0f };
 	//座標
-	XMFLOAT3 position = { 0.0f,  0.0f,  0.0f };
+	XMFLOAT3 position = { 0.0f,  0.0f,  100.0f };
 
 	//ワールド行列変換
 	XMMATRIX matWorld;
@@ -857,21 +857,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		BYTE key[256] = {};
 		keyboard->GetDeviceState(sizeof(key), key);
 
-		if (key[DIK_D] || key[DIK_A])
+		if (key[DIK_D] || key[DIK_A] || key[DIK_W] || key[DIK_S])
 		{
 			if (key[DIK_D]) {
-				angle += XMConvertToRadians(1.0f);
+				rotation.y += XMConvertToRadians(1.0f);
 			}
 			else if (key[DIK_A]) {
-				angle -= XMConvertToRadians(1.0f);
+				rotation.y -= XMConvertToRadians(1.0f);
 			}
-
-			//angleラジアンだけY軸周りに回転
-			eye.x = -100 * sinf(angle);
-			eye.z = -100 * cosf(angle);
-
-			//ビュー行列を作り直す
-			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+			if (key[DIK_S]) {
+				rotation.x += XMConvertToRadians(1.0f);
+			}
+			else if (key[DIK_W]) {
+				rotation.x -= XMConvertToRadians(1.0f);
+			}
 		}
 
 		//座標を移動する処理
