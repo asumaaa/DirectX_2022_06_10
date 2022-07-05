@@ -10,10 +10,12 @@
 #include "dinput.h"
 #include "assert.h"
 #include "DirectXTex.h"
+#include "wrl.h"
 
 #define DIRECTINPUT_VERSION	0x0800	//DirectInputtのバージョン指定
 
 using namespace DirectX;
+using namespace Microsoft::WRL;
 
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
@@ -27,13 +29,13 @@ const int window_height = 720;	//立幅
 
 //DirectX初期化用の変数
 HRESULT result;
-ID3D12Device* device = nullptr;
-IDXGIFactory7* dxgiFactory = nullptr;
-IDXGISwapChain4* swapChain = nullptr;
-ID3D12CommandAllocator* commandAllocator = nullptr;
-ID3D12GraphicsCommandList* commandList = nullptr;
-ID3D12CommandQueue* commandQueue = nullptr;
-ID3D12DescriptorHeap* rtvHeap = nullptr;
+ComPtr<ID3D12Device> device;
+ComPtr<IDXGIFactory7> dxgiFactory;
+ComPtr<IDXGISwapChain4> swapChain;
+ComPtr<ID3D12CommandAllocator> commandAllocator;
+ComPtr<ID3D12GraphicsCommandList> commandList;
+ComPtr<ID3D12CommandQueue> commandQueue;
+ComPtr<ID3D12DescriptorHeap> rtvHeap;
 
 //定数バッファ用データ構造体(マテリアル)
 struct ConstBufferDataMaterial {
