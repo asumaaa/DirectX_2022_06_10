@@ -52,6 +52,7 @@ struct ConstBufferDataTransform
 struct Vertex
 {
 	XMFLOAT3 pos;	//座標
+	XMFLOAT3 normalize;	//法線ベクトル
 	XMFLOAT2 uv;	//uv座標
 };
 
