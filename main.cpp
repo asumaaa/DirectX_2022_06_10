@@ -899,6 +899,37 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	result = constBuffTransform->Map(0, nullptr, (void**)&constMapTransform);
 	assert(SUCCEEDED(result));
 
+	////定数バッファ2つ目
+	//ComPtr<ID3D12Resource> constBuffTransform1;
+	//ConstBufferDataTransform* constMapTransform1 = nullptr;
+	//{
+	//	//ヒープ設定
+	//	D3D12_HEAP_PROPERTIES cbHeapProp{};
+	//	cbHeapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
+	//	//リソース設定
+	//	D3D12_RESOURCE_DESC cbResourceDesc{};
+	//	cbResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	//	cbResourceDesc.Width = (sizeof(ConstBufferDataTransform) + 0xff) & ~0xff;	//256バイトアラインメント
+	//	cbResourceDesc.Height = 1;
+	//	cbResourceDesc.DepthOrArraySize = 1;
+	//	cbResourceDesc.MipLevels = 1;
+	//	cbResourceDesc.SampleDesc.Count = 1;
+	//	cbResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	//}
+	////定数バッファの生成
+	//result = device->CreateCommittedResource(
+	//	&cbHeapProp,
+	//	D3D12_HEAP_FLAG_NONE,
+	//	&cbResourceDesc,
+	//	D3D12_RESOURCE_STATE_GENERIC_READ,
+	//	nullptr,
+	//	IID_PPV_ARGS(&constBuffTransform1)
+	//);
+	//assert(SUCCEEDED(result));
+	////定数バッファのマッピング
+	//result = constBuffTransform1->Map(0, nullptr, (void**)&constMapTransform1);
+	//assert(SUCCEEDED(result));
+
 
 
 	//単位行列を代入
@@ -993,6 +1024,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		BYTE key[256] = {};
 		keyboard->GetDeviceState(sizeof(key), key);
 
+		//オブジェクト0番の処理
 		if (key[DIK_D] || key[DIK_A] || key[DIK_W] || key[DIK_S])
 		{
 			if (key[DIK_D]) {
@@ -1034,6 +1066,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		matWorld *= matTrans;
 
 		constMapTransform->mat = matWorld * matView * matProjection;
+
+		////オブジェクト1番の処理
+		//XMMATRIX matWorld1;
+		////スケーリング倍率
+		//XMFLOAT3 scale1 = { 1.0f,1.0f ,1.0f };
+		////回転角
+		//XMFLOAT3 rotation1 = { 0.0f, -XM_PI/4.0f, 0.0f };
+		////座標
+		//XMFLOAT3 position1 = { -20.0f,  0.0f,  0.0f };
+
+		//XMMATRIX matTrans1 = XMMatrixTranslation(position1.x, position1.y, position1.z);
+
+		//XMMATRIX matScale1 = XMMatrixScaling(scale1.x, scale1.y, scale1.z);
+
+		//XMMATRIX matRot1 = XMMatrixIdentity();
+		//matRot1 *= XMMatrixRotationZ(rotation1.z);
+		//matRot1 *= XMMatrixRotationX(rotation1.x);
+		//matRot1 *= XMMatrixRotationY(rotation1.y);
+
+		//matWorld1 = XMMatrixIdentity();
+		//matWorld1 *= matScale1;
+		//matWorld1 *= matRot1;
+		//matWorld1 *= matTrans1;
+
+		//constMapTransform1->mat = matWorld1 * matView * matProjection;
 
 		//バックバッファの番号を取得(2つなので0番か1番)
 		UINT bbIndex = swapChain->GetCurrentBackBufferIndex();
@@ -1099,11 +1156,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		commandList->SetGraphicsRootDescriptorTable(1, srvGpuHandle);
 		//定数バッファビュー(CBV)の設定コマンド
 		commandList->SetGraphicsRootConstantBufferView(2, constBuffTransform->GetGPUVirtualAddress());
-		//インデックスバッファビューの設定コマンド
-		commandList->IASetIndexBuffer(&ibView);
-
 		//描画コマンド
 		commandList->DrawIndexedInstanced(_countof(indices), 1, 0, 0, 0);	//全ての頂点を使って描画
+		//インデックスバッファビューの設定コマンド
+		commandList->IASetIndexBuffer(&ibView);
+		////定数バッファビュー(CBV)の設定コマンド2
+		//commandList->SetGraphicsRootConstantBufferView(2, constBuffTransform1->GetGPUVirtualAddress());
+		////描画コマンド
+		//commandList->DrawIndexedInstanced(_countof(indices), 1, 0, 0, 0);	//全ての頂点を使って描画
+
+
+
 
 
 
