@@ -1024,7 +1024,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		BYTE key[256] = {};
 		keyboard->GetDeviceState(sizeof(key), key);
 
-		//オブジェクト0番の処理
 		if (key[DIK_D] || key[DIK_A] || key[DIK_W] || key[DIK_S])
 		{
 			if (key[DIK_D]) {
