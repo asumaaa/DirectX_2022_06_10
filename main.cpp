@@ -818,7 +818,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
 	textureHeapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
 	//リソース設定
-	D3D12_RESOURCE_DESC textureResourceDesc{},textureResourceDesc2{},textureResourceDesc3{};
+	D3D12_RESOURCE_DESC textureResourceDesc{}, textureResourceDesc2{}, textureResourceDesc3{};
 	textureResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	textureResourceDesc.Format = metadata.format;
 	textureResourceDesc.Width = metadata.width;	//幅
@@ -999,7 +999,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			//親オブジェクトを元にアフィン変換情報を生成
 			object3ds[i].scale = { 1.0f,1.0f,1.0f };
 			object3ds[i].rotation = { 0.0f,0.0f,XMConvertToRadians(30.0f) };
-			object3ds[i].position = { -20.0f,0.0f,-8.0f};
+			object3ds[i].position = { -20.0f,0.0f,-8.0f };
 		}
 	}
 
@@ -1168,7 +1168,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		result = commandList->Close();
 		assert(SUCCEEDED(result));
 		//コマンドリストの実行
-		ID3D12CommandList* commandLists[] = { commandList.Get()};
+		ID3D12CommandList* commandLists[] = { commandList.Get() };
 		commandQueue->ExecuteCommandLists(1, commandLists);
 
 		//画面に表示するバッファをクリップ

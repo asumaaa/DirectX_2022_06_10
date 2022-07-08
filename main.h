@@ -66,7 +66,7 @@ XMFLOAT3 position = { 0.0f,0.0f,0.0f };
 struct Object3d
 {
 	//定数バッファ
-	ID3D12Resource * constBuffTransform;
+	ID3D12Resource* constBuffTransform;
 	//定数バッファマップ
 	ConstBufferDataTransform* constMapTransform;
 	//アフィン変換情報
@@ -76,7 +76,7 @@ struct Object3d
 	//ワールド変換行列
 	XMMATRIX matWorld;
 	//親オブジェクトのポインター
-	Object3d *parent = nullptr;
+	Object3d* parent = nullptr;
 };
 
 //3Dオブジェクト初期化
@@ -98,13 +98,13 @@ void InitializeObject3d(Object3d* object, ComPtr<ID3D12Device> device)
 	cbResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 	//定数バッファの生成
-		result = device->CreateCommittedResource(
-	&cbHeapProp,
-	D3D12_HEAP_FLAG_NONE,
-	&cbResourceDesc,
-	D3D12_RESOURCE_STATE_GENERIC_READ,
-	nullptr,
-	IID_PPV_ARGS(&object->constBuffTransform)
+	result = device->CreateCommittedResource(
+		&cbHeapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&cbResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&object->constBuffTransform)
 	);
 	assert(SUCCEEDED(result));
 	//定数バッファのマッピング
@@ -142,7 +142,7 @@ void UpdateObject3d(Object3d* object, XMMATRIX& matView, XMMATRIX& matProjection
 
 //オブジェクト描画処理
 void DrawObject3d(Object3d* object, ComPtr<ID3D12GraphicsCommandList> commandList, D3D12_VERTEX_BUFFER_VIEW& vbView,
-	D3D12_INDEX_BUFFER_VIEW& ibView,UINT numIndices)
+	D3D12_INDEX_BUFFER_VIEW& ibView, UINT numIndices)
 {
 	//頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &vbView);
