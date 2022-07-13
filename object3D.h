@@ -46,7 +46,7 @@ struct Vertex
 struct Object3d
 {
 	//定数バッファ
-	ID3D12Resource* constBuffTransform;
+	ComPtr<ID3D12Resource> constBuffTransform;
 	//定数バッファマップ
 	ConstBufferDataTransform* constMapTransform;
 	//アフィン変換情報
@@ -81,10 +81,12 @@ struct texData
 	//テクスチャーのGPUのハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle;
 	//画像用デスクリプタヒープ
-	ID3D12DescriptorHeap* srvHeap = nullptr;
+	ID3D12DescriptorHeap *  srvHeap;
 };
 
 //画像データ初期化
-void InitializeTexData(texData* tex, const wchar_t* szFile, ComPtr<ID3D12Device> device, int texNum);
+void InitializeTexData(texData* tex,const wchar_t* szFile, ComPtr<ID3D12Device> device, int texNum);
+//srvをセット
+void SetSrv(texData* tex, ComPtr<ID3D12GraphicsCommandList> commandList);
 //画像データ描画
-void DrawTex3d(texData* tex, ComPtr<ID3D12GraphicsCommandList> commandList);
+void DrawTex3d(texData* tex,ComPtr<ID3D12GraphicsCommandList> commandList);

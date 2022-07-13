@@ -75,6 +75,11 @@ void DrawObject3d(Object3d* object, ComPtr<ID3D12GraphicsCommandList> commandLis
 	commandList->DrawIndexedInstanced(numIndices, 1, 0, 0, 0);	//全ての頂点を使って描画
 }
 
+void SetSrv(texData* tex , ComPtr<ID3D12GraphicsCommandList> commandList)
+{
+	commandList->SetDescriptorHeaps(1, &tex->srvHeap);
+}
+
 
 
 void InitializeTexData(texData* tex, const wchar_t* szFile, ComPtr<ID3D12Device> device,  int texNum)
@@ -199,8 +204,6 @@ void InitializeTexData(texData* tex, const wchar_t* szFile, ComPtr<ID3D12Device>
 
 void DrawTex3d(texData* tex, ComPtr<ID3D12GraphicsCommandList> commandList)
 {
-	//SRVヒープの設定コマンド
-	commandList->SetDescriptorHeaps(1, &tex->srvHeap);
 	//描画コマンド
 	commandList->SetGraphicsRootDescriptorTable(1, tex->srvGpuHandle);
 }

@@ -1,4 +1,5 @@
 #include "main.h"
+#include "dxgidebug.h"
 
 
 //ウィンドウプロシージャ
@@ -11,7 +12,7 @@ LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_DESTROY:
 		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
-		return 0;
+		return 1;
 	}
 	//標準のメッセージ処理を行う
 	return DefWindowProc(hwnd, msg, wparam, lparam);
@@ -745,9 +746,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//画像
 	texData texture[metadataCount];
 	//初期化
-	InitializeTexData(&texture[0], L"Resources/texture.jpg", device.Get(), 0);
-	InitializeTexData(&texture[1], L"Resources/texture2.jpg", device.Get(), 1);
-	InitializeTexData(&texture[2], L"Resources/texture3.jpg", device.Get(), 2);
+	InitializeTexData(&texture[0],L"Resources/texture.jpg", device.Get(), 0);
+	InitializeTexData(&texture[1],L"Resources/texture2.jpg", device.Get(), 1);
+	InitializeTexData(&texture[2],L"Resources/texture3.jpg", device.Get(), 2);
 
 
 	//3Dオブジェクトの数
@@ -799,12 +800,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		{
 			TranslateMessage(&msg);	//キー入力メッセージの処理
 			DispatchMessage(&msg);	//プロシージャにメッセージを送る
-		}
-
-		//Xボタンで終了メッセ時が来たらゲームループを抜ける
-		if (msg.message == WM_QUIT)
-		{
-			break;
 		}
 #pragma endregion
 
@@ -903,10 +898,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		commandList->SetGraphicsRootConstantBufferView(0, constBuffMaterial->GetGPUVirtualAddress());
 
 		//seikinを描画
+		SetSrv(&texture[2], commandList.Get());
 		DrawTex3d(&texture[2], commandList.Get());
 		DrawObject3d(&object3ds[0], commandList.Get(), vbView, ibView, _countof(indices));
 
 		//hikakinを描画
+		SetSrv(&texture[1], commandList.Get());
 		DrawTex3d(&texture[1], commandList.Get());
 		DrawObject3d(&object3ds[1], commandList.Get(), vbView, ibView, _countof(indices));
 
@@ -949,6 +946,38 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		assert(SUCCEEDED(result));
 
 #pragma endregion
+
+
+		//Xボタンで終了メッセ時が来たらゲームループを抜ける 
+		if (msg.message == WM_QUIT)
+		{
+			/*ID3D12DebugDevice* debugInterface;
+
+			if (SUCCEEDED(device.Get()->QueryInterface(&debugInterface)))
+			{
+				debugInterface->ReportLiveDeviceObjects(
+					D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+				debugInterface->Release();
+			}*/
+
+			IDXGIDebug* giDebugInterface = nullptr;
+
+			if (giDebugInterface == nullptr)
+			{
+				//作成
+				typedef HRESULT(__stdcall* fPtr)(const IID &, void **);
+				HMODULE hDll = GetModuleHandleW(L"dxgidebug.dll");
+				fPtr DXGIGetDebugInterface =
+					(fPtr)GetProcAddress(hDll, "DXGIGetDebugInterface");
+
+				DXGIGetDebugInterface(__uuidof(IDXGIDebug), (void**)&giDebugInterface);
+
+				//出力
+				giDebugInterface->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_DETAIL);
+			}
+
+			break;
+		}
 
 		//ウィンドウクラスを登録解除
 		UnregisterClass(w.lpszClassName, w.hInstance);
