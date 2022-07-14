@@ -666,12 +666,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		dx->GetCommandList()->SetGraphicsRootConstantBufferView(0, constBuffMaterial->GetGPUVirtualAddress());
 
 		//seikin‚ð•`‰æ
-		SetSrv(&texture[2], dx->GetCommandList());
 		DrawTex3d(&texture[2], dx->GetCommandList());
 		DrawObject3d(&object3ds[0], dx->GetCommandList(), vbView, ibView, _countof(indices));
 
 		//hikakin‚ð•`‰æ
-		SetSrv(&texture[1], dx->GetCommandList());
 		DrawTex3d(&texture[1], dx->GetCommandList());
 		DrawObject3d(&object3ds[1], dx->GetCommandList(), vbView, ibView, _countof(indices));
 

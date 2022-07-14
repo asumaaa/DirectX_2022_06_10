@@ -76,7 +76,5 @@ struct texData
 
 //画像データ初期化
 void InitializeTexData(texData* tex,const wchar_t* szFile, ComPtr<ID3D12Device> device, int texNum);
-//srvをセット
-void SetSrv(texData* tex, ComPtr<ID3D12GraphicsCommandList> commandList);
 //画像データ描画
 void DrawTex3d(texData* tex,ComPtr<ID3D12GraphicsCommandList> commandList);
