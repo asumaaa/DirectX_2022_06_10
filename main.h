@@ -2,6 +2,7 @@
 #include "WinApp.h"
 #include "DirectXIni.h"
 #include "input.h"
+#include "Masage.h"
 
 #include "string"
 #include "DirectXMath.h"

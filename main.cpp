@@ -1,5 +1,4 @@
 #include "main.h"
-#include "dxgidebug.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -8,7 +7,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	win = WinApp::GetInstance();
 	win->CreateWindow_(L"DirectX");
 
-	MSG msg{};	//メッセージ
+	Masage* masage;	//メッセージ
+	masage = Masage::GetInstance();
 
 	//DirectX初期化処理
 	DirectXIni* dx = nullptr;
@@ -571,15 +571,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//ゲームループ
 	while (true)
 	{
-#pragma region メッセージ処理
-
 		//メッセージがある？
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);	//キー入力メッセージの処理
-			DispatchMessage(&msg);	//プロシージャにメッセージを送る
-		}
-#pragma endregion
+		masage->Update();
 
 #pragma region DirectX毎フレーム処理
 
@@ -724,27 +717,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
 		//Xボタンで終了メッセ時が来たらゲームループを抜ける 
-		if (msg.message == WM_QUIT)
+		if (masage->ExitGameloop() == 1)
 		{
-			IDXGIDebug* giDebugInterface = nullptr;
-
-			if (giDebugInterface == nullptr)
-			{
-				//作成
-				typedef HRESULT(__stdcall* fPtr)(const IID &, void **);
-				HMODULE hDll = GetModuleHandleW(L"dxgidebug.dll");
-				if (hDll != 0)
-				{
-					fPtr DXGIGetDebugInterface =
-						(fPtr)GetProcAddress(hDll, "DXGIGetDebugInterface");
-
-					DXGIGetDebugInterface(__uuidof(IDXGIDebug), (void**)&giDebugInterface);
-
-					//出力
-					giDebugInterface->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_DETAIL);
-				}
-			}
-
 			break;
 		}
 
