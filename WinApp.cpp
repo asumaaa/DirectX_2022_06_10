@@ -22,7 +22,7 @@ WinApp* WinApp::GetInstance()
 	return &instance;
 }
 
-void WinApp::CreateWindow_()
+void WinApp::CreateWindow_(const wchar_t* title)
 {
 	// COM初期化
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
@@ -43,7 +43,7 @@ void WinApp::CreateWindow_()
 	//ウィンドウオブジェクトの生成
 	hwnd = CreateWindow(
 		w.lpszClassName,		//クラス名
-		L"DirectXGame",			//タイトルバーの文字
+		title,			//タイトルバーの文字
 		WS_OVERLAPPEDWINDOW,	//標準的なウィンドウスタイル
 		CW_USEDEFAULT,			//表示X座標
 		CW_USEDEFAULT,			//表示Y座標

@@ -14,7 +14,7 @@ public:
 public:
 	static WinApp* GetInstance();
 	//ウィンドウ生成
-	void CreateWindow_();
+	void CreateWindow_(const wchar_t* title);
 	//ウィンドウクラスを登録解除
 	void deleteWindow();
 
