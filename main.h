@@ -1,6 +1,8 @@
 #pragma once
 #include "WinApp.h"
 #include "DirectXIni.h"
+#include "input.h"
+
 #include "string"
 #include "DirectXMath.h"
 #include "d3dcompiler.h"
@@ -8,8 +10,6 @@
 #include "assert.h"
 #include "DirectXTex.h"
 #include "object3D.h"
-
-#define DIRECTINPUT_VERSION	0x0800	//DirectInputtのバージョン指定
 
 using namespace DirectX;
 using namespace Microsoft::WRL;

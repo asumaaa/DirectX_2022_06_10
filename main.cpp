@@ -15,33 +15,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	dx = DirectXIni::GetInstance();
 	dx->Initialize(win);
 
-	//キーボードの設定
-	//DirectInputの初期化
-	ComPtr<IDirectInput8> directInput;
-	result = DirectInput8Create(
-		win->w.hInstance,
-		DIRECTINPUT_VERSION,
-		IID_IDirectInput8,
-		(void**)&directInput,
-		nullptr
-	);
-	assert(SUCCEEDED(result));
-
-	//キーボードデバイスの生成
-	ComPtr<IDirectInputDevice8> keyboard;
-	result = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
-	assert(SUCCEEDED(result));
-
-	//入力データ形式のセット
-	result = keyboard->SetDataFormat(&c_dfDIKeyboard);	//標準形式
-	assert(SUCCEEDED(result));
-
-	//排他制御レベルのセット
-	result = keyboard->SetCooperativeLevel(
-		win->hwnd,
-		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
-	);
-	assert(SUCCEEDED(result));
+	//キーボード
+	Input* input = nullptr;
+	input = Input::GetInstance();
+	input->Initialize(win);
 
 #pragma region 描画処理初期化
 
@@ -606,40 +583,37 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 #pragma region DirectX毎フレーム処理
 
-		//キーボード情報の取得開始
-		keyboard->Acquire();
-		//全キーの入力状態を取得する
-		BYTE key[256] = {};
-		keyboard->GetDeviceState(sizeof(key), key);
+		//キーボード更新
+		input->Update();
 
 		for (int i = 0; i < _countof(object3ds); i++)
 		{
 			UpdateObject3d(&object3ds[i], matView, matProjection);
 		}
 
-		if (key[DIK_D] || key[DIK_A] || key[DIK_W] || key[DIK_S])
+		if (input->key[DIK_D] || input->key[DIK_A] || input->key[DIK_W] || input->key[DIK_S])
 		{
-			if (key[DIK_D]) {
+			if (input->key[DIK_D]) {
 				object3ds[0].rotation.y += XMConvertToRadians(1.0f);
 			}
-			else if (key[DIK_A]) {
+			else if (input->key[DIK_A]) {
 				object3ds[0].rotation.y -= XMConvertToRadians(1.0f);
 			}
-			if (key[DIK_S]) {
+			if (input->key[DIK_S]) {
 				object3ds[0].rotation.x += XMConvertToRadians(1.0f);
 			}
-			else if (key[DIK_W]) {
+			else if (input->key[DIK_W]) {
 				object3ds[0].rotation.x -= XMConvertToRadians(1.0f);
 			}
 		}
 
 		//座標を移動する処理
-		if (key[DIK_UP] || key[DIK_DOWN] || key[DIK_RIGHT] || key[DIK_LEFT])
+		if (input->key[DIK_UP] || input->key[DIK_DOWN] || input->key[DIK_RIGHT] ||input->key[DIK_LEFT])
 		{
-			if (key[DIK_UP]) { object3ds[0].position.z += 1.0f; }
-			else if (key[DIK_DOWN]) { object3ds[0].position.z -= 1.0f; }
-			if (key[DIK_RIGHT]) { object3ds[0].position.x += 1.0f; }
-			else if (key[DIK_LEFT]) { object3ds[0].position.x -= 1.0f; }
+			if (input->key[DIK_UP]) { object3ds[0].position.z += 1.0f; }
+			else if (input->key[DIK_DOWN]) { object3ds[0].position.z -= 1.0f; }
+			if (input->key[DIK_RIGHT]) { object3ds[0].position.x += 1.0f; }
+			else if (input->key[DIK_LEFT]) { object3ds[0].position.x -= 1.0f; }
 
 		}
 
