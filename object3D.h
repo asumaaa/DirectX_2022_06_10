@@ -57,24 +57,3 @@ void UpdateObject3d(Object3d* object, XMMATRIX& matView, XMMATRIX& matProjection
 //オブジェクト描画処理
 void DrawObject3d(Object3d* object, ComPtr<ID3D12GraphicsCommandList> commandList, D3D12_VERTEX_BUFFER_VIEW& vbView,
 	D3D12_INDEX_BUFFER_VIEW& ibView, UINT numIndices);
-
-//画像データ構造体
-struct texData
-{
-	//画像
-	TexMetadata metadata;
-	ScratchImage scratchImg;
-	//ミップマップ
-	ScratchImage mipChain;
-	//テクスチャバッファ
-	ComPtr<ID3D12Resource> texBuff;
-	//テクスチャーのGPUのハンドル
-	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle;
-	//画像用デスクリプタヒープ
-	ComPtr<ID3D12DescriptorHeap> srvHeap;
-};
-
-//画像データ初期化
-void InitializeTexData(texData* tex,const wchar_t* szFile, ComPtr<ID3D12Device> device, int texNum);
-//画像データ描画
-void DrawTex3d(texData* tex,ComPtr<ID3D12GraphicsCommandList> commandList);

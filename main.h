@@ -3,6 +3,7 @@
 #include "DirectXIni.h"
 #include "input.h"
 #include "Masage.h"
+#include "Texture.h"
 
 #include "string"
 #include "DirectXMath.h"

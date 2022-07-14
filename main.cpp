@@ -522,11 +522,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//読み込む画像の数
 	const size_t metadataCount = 3;
 	//画像
-	texData texture[metadataCount];
+	Texture texture[metadataCount];
 	//初期化
-	InitializeTexData(&texture[0], L"Resources/texture.jpg", dx->GetDevice(), 0);
-	InitializeTexData(&texture[1], L"Resources/texture2.jpg", dx->GetDevice(), 1);
-	InitializeTexData(&texture[2], L"Resources/texture3.jpg", dx->GetDevice(), 2);
+	texture[0].Initialize(L"Resources/texture.jpg", dx, 0);
+	texture[1].Initialize(L"Resources/texture2.jpg", dx, 1);
+	texture[2].Initialize(L"Resources/texture3.jpg", dx, 2);
 
 
 	//3Dオブジェクトの数
@@ -666,11 +666,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		dx->GetCommandList()->SetGraphicsRootConstantBufferView(0, constBuffMaterial->GetGPUVirtualAddress());
 
 		//seikinを描画
-		DrawTex3d(&texture[2], dx->GetCommandList());
+		texture[2].Draw();
 		DrawObject3d(&object3ds[0], dx->GetCommandList(), vbView, ibView, _countof(indices));
 
 		//hikakinを描画
-		DrawTex3d(&texture[1], dx->GetCommandList());
+		texture[1].Draw();
 		DrawObject3d(&object3ds[1], dx->GetCommandList(), vbView, ibView, _countof(indices));
 
 		// 5. リソースバリアを書き込み禁止に
