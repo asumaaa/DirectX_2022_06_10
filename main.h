@@ -1,5 +1,5 @@
 #pragma once
-#include "WinApp.h"
+#include "Windows.h"
 #include "d3d12.h"
 #include "dxgi1_6.h"
 #include "cassert"
@@ -39,3 +39,7 @@ float angle = 0.0f;
 
 //座標
 XMFLOAT3 position = { 0.0f,0.0f,0.0f };
+
+//ウィンドウサイズ
+ const int window_width = 1280;	//横幅
+ const int window_height = 720;	//立幅
