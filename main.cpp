@@ -1,64 +1,12 @@
 #include "main.h"
 #include "dxgidebug.h"
 
-
-////ウィンドウプロシージャ
-//LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-//{
-//	//メッセージに応じてゲーム固有の処理を行う
-//	switch (msg)
-//	{
-//		//ウィンドウが破棄された
-//	case WM_DESTROY:
-//		//OSに対して、アプリの終了を伝える
-//		PostQuitMessage(0);
-//		return 1;
-//	}
-//	//標準のメッセージ処理を行う
-//	return DefWindowProc(hwnd, msg, wparam, lparam);
-//}
-
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-
-#pragma region ウィンドウ生成
-	////ウィンドウクラスの生成
-	//WNDCLASSEX w{};
-	//w.cbSize = sizeof(WNDCLASSEX);
-	//w.lpfnWndProc = (WNDPROC)WindowProc;	//ウィンドウプロシージャを設定
-	//w.lpszClassName = L"DirectXGame";		//ウィンドウクラス名
-	//w.hInstance = GetModuleHandle(nullptr);	//ウィンドウハンドル
-	//w.hCursor = LoadCursor(NULL, IDC_ARROW);//カーソル指定
-
-	////ウィンドウクラスをOSに登録する
-	//RegisterClassEx(&w);
-	////ウィンドウサイズう
-	//RECT wrc = { 0,0,window_width,window_height };
-	////自動でサイズを補正する
-	//AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
-
-	////ウィンドウオブジェクトの生成
-	//HWND hwnd = CreateWindow(
-	//	w.lpszClassName,		//クラス名
-	//	L"DirectXGame",			//タイトルバーの文字
-	//	WS_OVERLAPPEDWINDOW,	//標準的なウィンドウスタイル
-	//	CW_USEDEFAULT,			//表示X座標
-	//	CW_USEDEFAULT,			//表示Y座標
-	//	wrc.right - wrc.left,	//ウィンドウ横幅
-	//	wrc.bottom - wrc.top,	//ウィンドウ縦幅
-	//	nullptr,				//親ウィンドウハンドル
-	//	nullptr,				//メニューハンドル
-	//	w.hInstance,			//呼び出しアプリケーションハンドル
-	//	nullptr					//オプション
-	//);
-
-	////ウィンドウを表示状態にする
-	//ShowWindow(hwnd, SW_SHOW);
+	//ウィンドウ生成
 	WinApp* Win = nullptr;
 	Win = WinApp::GetInstance();
 	Win->CreateWindow_();
-
-#pragma endregion
 
 	MSG msg{};	//メッセージ
 
@@ -218,7 +166,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	//キーボードの設定
 	//DirectInputの初期化
-	IDirectInput8* directInput = nullptr;
+	ComPtr<IDirectInput8> directInput;
 	result = DirectInput8Create(
 		Win->w.hInstance,
 		DIRECTINPUT_VERSION,
@@ -229,7 +177,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	assert(SUCCEEDED(result));
 
 	//キーボードデバイスの生成
-	IDirectInputDevice8* keyboard = nullptr;
+	ComPtr<IDirectInputDevice8> keyboard;
 	result = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
 	assert(SUCCEEDED(result));
 
@@ -955,15 +903,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		//Xボタンで終了メッセ時が来たらゲームループを抜ける 
 		if (msg.message == WM_QUIT)
 		{
-			/*ID3D12DebugDevice* debugInterface;
-
-			if (SUCCEEDED(device.Get()->QueryInterface(&debugInterface)))
-			{
-				debugInterface->ReportLiveDeviceObjects(
-					D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
-				debugInterface->Release();
-			}*/
-
 			IDXGIDebug* giDebugInterface = nullptr;
 
 			if (giDebugInterface == nullptr)
@@ -971,13 +910,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 				//作成
 				typedef HRESULT(__stdcall* fPtr)(const IID &, void **);
 				HMODULE hDll = GetModuleHandleW(L"dxgidebug.dll");
-				fPtr DXGIGetDebugInterface =
-					(fPtr)GetProcAddress(hDll, "DXGIGetDebugInterface");
+				if (hDll != 0)
+				{
+					fPtr DXGIGetDebugInterface =
+						(fPtr)GetProcAddress(hDll, "DXGIGetDebugInterface");
 
-				DXGIGetDebugInterface(__uuidof(IDXGIDebug), (void**)&giDebugInterface);
+					DXGIGetDebugInterface(__uuidof(IDXGIDebug), (void**)&giDebugInterface);
 
-				//出力
-				giDebugInterface->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_DETAIL);
+					//出力
+					giDebugInterface->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_DETAIL);
+				}
 			}
 
 			break;

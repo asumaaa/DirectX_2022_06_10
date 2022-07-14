@@ -77,7 +77,8 @@ void DrawObject3d(Object3d* object, ComPtr<ID3D12GraphicsCommandList> commandLis
 
 void SetSrv(texData* tex , ComPtr<ID3D12GraphicsCommandList> commandList)
 {
-	commandList->SetDescriptorHeaps(1, &tex->srvHeap);
+	ID3D12DescriptorHeap* ppHeaps[] = { tex->srvHeap.Get()};
+	commandList->SetDescriptorHeaps(1, ppHeaps);
 }
 
 

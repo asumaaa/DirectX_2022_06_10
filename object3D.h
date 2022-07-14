@@ -6,22 +6,12 @@
 #include "vector"
 #include "string"
 #include "DirectXMath.h"
-#include "d3dcompiler.h"
-#include "dinput.h"
 #include "assert.h"
 #include "DirectXTex.h"
 #include "wrl.h"
 
-#define DIRECTINPUT_VERSION	0x0800	//DirectInputtのバージョン指定
-
 using namespace DirectX;
 using namespace Microsoft::WRL;
-
-#pragma comment(lib,"d3d12.lib")
-#pragma comment(lib,"dxgi.lib")
-#pragma comment(lib,"d3dcompiler.lib")
-#pragma comment(lib,"dinput8.lib")
-#pragma comment(lib,"dxguid.lib")
 
 //定数バッファ用データ構造体(マテリアル)
 struct ConstBufferDataMaterial {
@@ -81,7 +71,7 @@ struct texData
 	//テクスチャーのGPUのハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle;
 	//画像用デスクリプタヒープ
-	ID3D12DescriptorHeap *  srvHeap;
+	ComPtr<ID3D12DescriptorHeap> srvHeap;
 };
 
 //画像データ初期化

@@ -1,47 +1,6 @@
 #include "WinApp.h"
 #include <string>
 
-//WinApp* WinApp::GetInstance()
-//{
-//    return nullptr;
-//}
-//
-//LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-//{
-//    return LRESULT();
-//}
-//
-//void WinApp::CreateGameWindow(const char* title, UINT windowStyle, int32_t clientWidth, int32_t clientHeight)
-//{
-//}
-//
-//void WinApp::TerminateGameWindow()
-//{
-//}
-//
-//bool WinApp::ProcessMessage()
-//{
-//    return false;
-//}
-//
-//void WinApp::SetFullscreen(bool fullscreen)
-//{
-//}
-//
-//bool WinApp::IsFullscreen() const
-//{
-//    return false;
-//}
-//
-//void WinApp::SetSizeChangeMode(SizeChangeMode sizeChangeMode)
-//{
-//}
-//
-//WinApp::SizeChangeMode WinApp::GetSizeChangeMode() const
-//{
-//    return SizeChangeMode();
-//}
-
 LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	//メッセージに応じてゲーム固有の処理を行う
