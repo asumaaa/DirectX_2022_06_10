@@ -1,5 +1,5 @@
 #pragma once
-#include "Windows.h"
+#include "WinApp.h"
 #include "d3d12.h"
 #include "dxgi1_6.h"
 #include "cassert"
@@ -23,10 +23,6 @@ using namespace Microsoft::WRL;
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
-
-//ウィンドウサイズ
-const int window_width = 1280;	//横幅
-const int window_height = 720;	//立幅
 
 //DirectX初期化用の変数
 HRESULT result;
