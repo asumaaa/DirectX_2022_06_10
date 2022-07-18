@@ -98,4 +98,42 @@ void Ver::Initialize(XMFLOAT3 size)
 
 	sizeVB = static_cast<UINT>(sizeof(vertices[0]) * _countof(vertices));
 	sizeIB = static_cast<UINT>(sizeof(uint16_t) * _countof(indices));
+
+	//頂点レイアウト
+	D3D12_INPUT_ELEMENT_DESC inputLayout_[] =
+	{
+		{	//xyz座標
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+			0
+		},
+		//normalize
+		{
+			"NORMAL",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+			0
+		},
+		//uv
+		{
+			"TEXCOORD",
+			0,
+			DXGI_FORMAT_R32G32_FLOAT,
+			0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+			0
+		},
+	};
+	for (int i = 0; i < 3; i++)
+	{
+		inputLayout[i] = inputLayout_[i];
+	}
 }

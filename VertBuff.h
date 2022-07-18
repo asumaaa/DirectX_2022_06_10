@@ -9,6 +9,6 @@ public:
 	D3D12_VERTEX_BUFFER_VIEW *GetVbView() { return &vbView; }
 public:
 	ComPtr<ID3D12Resource> vertBuff;
-	D3D12_VERTEX_BUFFER_VIEW vbView{};
+	D3D12_VERTEX_BUFFER_VIEW vbView{};		//頂点バッファビュー
 };
 

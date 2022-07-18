@@ -31,6 +31,6 @@ public:
 	unsigned short indices[24];
 	UINT sizeVB;
 	UINT sizeIB;
-
+	D3D12_INPUT_ELEMENT_DESC inputLayout[3];//頂点レイアウト	xyz座標、法線ベクトル、uv座標の順番
 };
 

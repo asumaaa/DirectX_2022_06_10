@@ -31,40 +31,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	shader.compileVs(L"BasicVS.hlsl");
 	shader.compilePs(L"BasicPS.hlsl");
 
-	//頂点レイアウト
-	D3D12_INPUT_ELEMENT_DESC inputLayout[] =
-	{
-		{	//xyz座標
-			"POSITION",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-			0
-		},
-		//normalize
-		{
-			"NORMAL",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-			0
-		},
-		//uv
-		{
-			"TEXCOORD",
-			0,
-			DXGI_FORMAT_R32G32_FLOAT,
-			0,
-			D3D12_APPEND_ALIGNED_ELEMENT,
-			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-			0
-		},
-	};
-
 	//グラフィックスパイプライン
 	//グラフィックスパイプラインの各ステージの設定をする構造体
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc{};
@@ -116,8 +82,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 
 	//頂点レイアウトの設定
-	pipelineDesc.InputLayout.pInputElementDescs = inputLayout;
-	pipelineDesc.InputLayout.NumElements = _countof(inputLayout);
+	pipelineDesc.InputLayout.pInputElementDescs = vertex->inputLayout;
+	pipelineDesc.InputLayout.NumElements = _countof(vertex->inputLayout);
 
 	//図形の形状設定
 	pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
