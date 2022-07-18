@@ -22,250 +22,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 #pragma region 描画処理初期化
 
-	////頂点データ
-	//Vertex vertices[] = {
-	//	//前
-	//	{{-5.0f,-5.0f,-5.0f},{},{0.0f,1.0f} },	//0
-	//	{{-5.0f, 5.0f,-5.0f},{},{0.0f,0.0f} },	//1 
-	//	{{ 5.0f,-5.0f,-5.0f},{},{1.0f,1.0f} },	//2 
-	//	{{ 5.0f, 5.0f,-5.0f},{},{1.0f,0.0f} },	//3
-	//	//後
-	//	{{ 5.0f,-5.0f, 5.0f},{},{0.0f,1.0f} },	//4
-	//	{{ 5.0f, 5.0f, 5.0f},{},{0.0f,0.0f} },	//5
-	//	{{-5.0f,-5.0f, 5.0f},{},{1.0f,1.0f} },	//6
-	//	{{-5.0f, 5.0f, 5.0f},{},{1.0f,0.0f} },	//7
-	//	//左
-	//	{{-5.0f,-5.0f,-5.0f},{},{0.0f,1.0f} },	//8
-	//	{{-5.0f,-5.0f, 5.0f},{},{0.0f,0.0f} },	//9
-	//	{{-5.0f, 5.0f,-5.0f},{},{1.0f,1.0f} },	//10
-	//	{{-5.0f, 5.0f, 5.0f},{},{1.0f,0.0f} },	//11
-	//	//右
-	//	{{ 5.0f,-5.0f,-5.0f},{},{0.0f,1.0f} },	//12
-	//	{{ 5.0f,-5.0f, 5.0f},{},{0.0f,0.0f} },	//13
-	//	{{ 5.0f, 5.0f,-5.0f},{},{1.0f,1.0f} },	//14
-	//	{{ 5.0f, 5.0f, 5.0f},{},{1.0f,0.0f} },	//15
-	//	//下
-	//	{{-5.0f,-5.0f, 5.0f},{},{0.0f,1.0f} },	//16
-	//	{{-5.0f,-5.0f,-5.0f},{},{0.0f,0.0f} },	//17
-	//	{{ 5.0f,-5.0f, 5.0f},{},{1.0f,1.0f} },	//18
-	//	{{ 5.0f,-5.0f,-5.0f},{},{1.0f,0.0f} },	//19
-	//	//上
-	//	{{-5.0f, 5.0f,-5.0f},{},{0.0f,1.0f} },	//20
-	//	{{-5.0f, 5.0f, 5.0f},{},{0.0f,0.0f} },	//21
-	//	{{ 5.0f, 5.0f,-5.0f},{},{1.0f,1.0f} },	//22
-	//	{{ 5.0f, 5.0f, 5.0f},{},{1.0f,0.0f} },	//23
-	//};
-	////インデックスデータ
-	//unsigned short indices[] =
-	//{
-
-	//	//前
-	//	0,1,2,	//三角形1つ目
-	//	2,1,3,	//三角形2つ目
-	//	//後
-	//	4,5,6,
-	//	6,5,7,
-	//	//左
-	//	8,9,10,
-	//	10,9,11,
-	//	//右
-	//	12,14,13,
-	//	13,14,15,
-	//	//下
-	//	16,17,18,
-	//	18,17,19,
-	//	//上
-	//	20,21,22,
-	//	22,21,23,
-
-	//	/*4,5,2,
-	//	5,2,3,*/
-	//};
-
-	////法線の計算
-	//for (int i = 0; i < _countof(indices) / 3; i++)
-	//{//三角形1つごとに計算していく
-	//	//三角形のインデックスを取り出して、一時的な変数に入れる
-	//	unsigned short indices0 = indices[i * 3 + 0];
-	//	unsigned short indices1 = indices[i * 3 + 1];
-	//	unsigned short indices2 = indices[i * 3 + 2];
-	//	//三角形を構成する頂点座標をベクトルに代入
-	//	XMVECTOR p0 = XMLoadFloat3(&vertices[indices0].pos);
-	//	XMVECTOR p1 = XMLoadFloat3(&vertices[indices1].pos);
-	//	XMVECTOR p2 = XMLoadFloat3(&vertices[indices2].pos);
-	//	//p0→p1ベクトル、p0→p2ベクトルを計算　(ベクトルの減算)
-	//	XMVECTOR v1 = XMVectorSubtract(p1, p0);
-	//	XMVECTOR v2 = XMVectorSubtract(p2, p0);
-	//	//外積は両方から垂直なベクトル
-	//	XMVECTOR normal = XMVector3Cross(v1, v2);
-	//	//正規化
-	//	normal = XMVector3Normalize(normal);
-	//	//求めた法線を頂点データに代入
-	//	XMStoreFloat3(&vertices[indices0].normalize, normal);
-	//	XMStoreFloat3(&vertices[indices1].normalize, normal);
-	//	XMStoreFloat3(&vertices[indices2].normalize, normal);
-	//}
-
-	////頂点データ全体のサイズ
-	//UINT sizeVB = static_cast<UINT>(sizeof(vertices[0]) * _countof(vertices));
-
-	////頂点バッファの設定
-	//D3D12_HEAP_PROPERTIES heapProp{};	//ヒープ設定
-	//heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;	//CPUへの転送用
-	////リソース設定
-	//D3D12_RESOURCE_DESC resDesc{};
-	//resDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	//resDesc.Width = sizeVB;	//頂点データ全体のサイズ
-	//resDesc.Height = 1;
-	//resDesc.DepthOrArraySize = 1;
-	//resDesc.MipLevels = 1;
-	//resDesc.SampleDesc.Count = 1;
-	//resDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-
-	////頂点バッファの生成
-	//ComPtr<ID3D12Resource> vertBuff;
-	//result = dx->GetDevice()->CreateCommittedResource(
-	//	&heapProp,	//ヒープ設定
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&resDesc,	//リソース設定
-	//	D3D12_RESOURCE_STATE_GENERIC_READ,
-	//	nullptr,
-	//	IID_PPV_ARGS(&vertBuff)
-	//);
-	//assert(SUCCEEDED(result));
-
-
-	////インデックスバッファ
-	////インデックスバッファ全体のサイズ
-	//UINT sizeIB = static_cast<UINT>(sizeof(uint16_t) * _countof(indices));
-
-	////リソース設定
-	//resDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	//resDesc.Width = sizeIB;	//インデックス情報が入る分のサイズ
-	//resDesc.Height = 1;
-	//resDesc.DepthOrArraySize = 1;
-	//resDesc.MipLevels = 1;
-	//resDesc.SampleDesc.Count = 1;
-	//resDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-
-	////インデックスバッファの生成
-	//ComPtr<ID3D12Resource> indexBuff;
-	//result = dx->GetDevice()->CreateCommittedResource(
-	//	&heapProp,	//ヒープ設定
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&resDesc,	//リソース設定
-	//	D3D12_RESOURCE_STATE_GENERIC_READ,
-	//	nullptr,
-	//	IID_PPV_ARGS(&indexBuff)
-	//);
-
-	////頂点バッファへのデータ転送
-	////GPU上のバッファに対応した仮想メモリ（メインメモリ上）を取得
-	//Vertex* vertMap = nullptr;
-	//result = vertBuff->Map(0, nullptr, (void**)&vertMap);
-	//assert(SUCCEEDED(result));
-	////全頂点に対して
-	//for (int i = 0; i < _countof(vertices); i++)
-	//{
-	//	vertMap[i] = vertices[i];	//座標をコピー
-	//}
-	////つながりを解除
-	//vertBuff->Unmap(0, nullptr);
-
-	////インデックスバッファをマッピング
-	//uint16_t* indexMap = nullptr;
-	//result = indexBuff->Map(0, nullptr, (void**)&indexMap);
-	////全インデックスに対して
-	//for (int i = 0; i < _countof(indices); i++)
-	//{
-	//	indexMap[i] = indices[i];	//インデックスをコピー
-	//}
-	////マッピング解除
-	//indexBuff->Unmap(0, nullptr);
-
-
-	////頂点バッファビューの作成
-	//D3D12_VERTEX_BUFFER_VIEW vbView{};
-	////GPU仮想アドレス
-	//vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
-	////頂点バッファのサイズ
-	//vbView.SizeInBytes = sizeVB;
-	////頂点１つ分のデータサイズ
-	//vbView.StrideInBytes = sizeof(vertices[0]);
-
-	////インデックスバッファビューの作成
-	//D3D12_INDEX_BUFFER_VIEW ibView{};
-	//ibView.BufferLocation = indexBuff->GetGPUVirtualAddress();
-	//ibView.Format = DXGI_FORMAT_R16_UINT;
-	//ibView.SizeInBytes = sizeIB;
-
-
-	ComPtr<ID3DBlob> vsBlob;	//頂点シェーダーオブジェクト
-	ComPtr<ID3DBlob> errorBlob;	//エラーオブジェクト
-
-	//頂点シェーダーの読み込みとコンパイル
-	result = D3DCompileFromFile(
-		L"BasicVS.hlsl",	//シェーダファイル名
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,	//インクルード可能にする
-		"main",	//エントリー名
-		"vs_5_0",	//シェーダーモデル指定
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,	//デバッグ用設定
-		0,
-		&vsBlob,
-		&errorBlob
-	);
-
-	//エラーなら
-	if (FAILED(result))
-	{
-		//errorBlobからエラーの内容をstring型にコピー
-		std::string error;
-		error.resize(errorBlob->GetBufferSize());
-
-		std::copy_n(
-			(char*)errorBlob->GetBufferPointer(),
-			errorBlob->GetBufferSize(),
-			error.begin()
-		);
-		error += "\n";
-		//エラー内容を出力ウィンドウに表示
-		OutputDebugStringA(error.c_str());
-		assert(0);
-	}
-
-	ComPtr<ID3DBlob> psBlob;	//ピクセルシェーダーオブジェクト
-
-	//ピクセルシェーダーの読み込みとコンパイル
-	result = D3DCompileFromFile(
-		L"BasicPS.hlsl",	//シェーダファイル名
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,	//インクルード可能にする
-		"main",		//エントリーポイント名
-		"ps_5_0",	//シェーダモデル指定
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,	//デバッグ用設定
-		0,
-		&psBlob,
-		&errorBlob
-	);
-
-	//エラーなら
-	if (FAILED(result))
-	{
-		//errorBlobからエラーの内容をstring型にコピー
-		std::string error;
-		error.resize(errorBlob->GetBufferSize());
-
-		std::copy_n(
-			(char*)errorBlob->GetBufferPointer(),
-			errorBlob->GetBufferSize(),
-			error.begin()
-		);
-		error += "\n";
-		//エラー内容を出力ウィンドウに表示
-		OutputDebugStringA(error.c_str());
-		assert(0);
-	}
+	Ver* vertex = nullptr;
+	vertex = Ver::GetInstance();
+	vertex->Initialize(XMFLOAT3(5.0, 5.0, 5.0));
+	IndexBuff indexBuff(vertex, dx);
+	VertBuff vertBuff(vertex, dx);
+	Shader shader;
+	shader.compileVs(L"BasicVS.hlsl");
+	shader.compilePs(L"BasicPS.hlsl");
 
 	//頂点レイアウト
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] =
@@ -306,10 +70,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc{};
 
 	//シェーダをパイプラインに設定
-	pipelineDesc.VS.pShaderBytecode = vsBlob->GetBufferPointer();
-	pipelineDesc.VS.BytecodeLength = vsBlob->GetBufferSize();
-	pipelineDesc.PS.pShaderBytecode = psBlob->GetBufferPointer();
-	pipelineDesc.PS.BytecodeLength = psBlob->GetBufferSize();
+	pipelineDesc.VS.pShaderBytecode = shader.vsBlob->GetBufferPointer();
+	pipelineDesc.VS.BytecodeLength = shader.vsBlob->GetBufferSize();
+	pipelineDesc.PS.pShaderBytecode = shader.psBlob->GetBufferPointer();
+	pipelineDesc.PS.BytecodeLength = shader.psBlob->GetBufferSize();
 
 	//サンプルマスクの設定
 	pipelineDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;	//標準設定
@@ -469,7 +233,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		&rootSignatureDesc,
 		D3D_ROOT_SIGNATURE_VERSION_1_0,
 		&rootSigBlob,
-		&errorBlob);
+		&shader.errorBlob);
 	assert(SUCCEEDED(result));
 	result = dx->GetDevice()->CreateRootSignature(
 		0,
@@ -667,11 +431,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		//seikinを描画
 		texture[2].Draw();
-		DrawObject3d(&object3ds[0], dx->GetCommandList(), vbView, ibView, _countof(indices));
+		DrawObject3d(&object3ds[0], dx->GetCommandList(), vertBuff.vbView, indexBuff.ibView, _countof(vertex->indices));
 
 		//hikakinを描画
 		texture[1].Draw();
-		DrawObject3d(&object3ds[1], dx->GetCommandList(), vbView, ibView, _countof(indices));
+		DrawObject3d(&object3ds[1], dx->GetCommandList(), vertBuff.vbView, indexBuff.ibView, _countof(vertex->indices));
 
 		// 5. リソースバリアを書き込み禁止に
 		barrierDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;	//描画状態から

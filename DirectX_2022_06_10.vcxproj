@@ -147,6 +147,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Masage.cpp" />
     <ClCompile Include="object3D.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertBuff.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="Masage.h" />
     <ClInclude Include="object3D.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VertBuff.h" />
     <ClInclude Include="Vertex.h" />
