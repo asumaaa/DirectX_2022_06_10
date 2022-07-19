@@ -6,7 +6,7 @@ Ver* Ver::GetInstance()
 	return &instance;
 }
 
-void Ver::Initialize(XMFLOAT3 size)
+void Ver::Create(XMFLOAT3 size)
 {
 	//頂点データ
 	Vertex v[] = {

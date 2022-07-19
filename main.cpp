@@ -24,74 +24,78 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	Ver* vertex = nullptr;
 	vertex = Ver::GetInstance();
-	vertex->Initialize(XMFLOAT3(5.0, 5.0, 5.0));
+	vertex->Create(XMFLOAT3(5.0, 5.0, 5.0));
 	IndexBuff indexBuff(vertex, dx);
 	VertBuff vertBuff(vertex, dx);
 	Shader shader;
 	shader.compileVs(L"BasicVS.hlsl");
 	shader.compilePs(L"BasicPS.hlsl");
 
-	//グラフィックスパイプライン
-	//グラフィックスパイプラインの各ステージの設定をする構造体
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc{};
+	Pipeline *pipeline = nullptr;
+	pipeline->Initialize(shader,vertex);
 
-	//シェーダをパイプラインに設定
-	pipelineDesc.VS.pShaderBytecode = shader.vsBlob->GetBufferPointer();
-	pipelineDesc.VS.BytecodeLength = shader.vsBlob->GetBufferSize();
-	pipelineDesc.PS.pShaderBytecode = shader.psBlob->GetBufferPointer();
-	pipelineDesc.PS.BytecodeLength = shader.psBlob->GetBufferSize();
 
-	//サンプルマスクの設定
-	pipelineDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;	//標準設定
+	////グラフィックスパイプライン
+	////グラフィックスパイプラインの各ステージの設定をする構造体
+	//D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc{};
 
-	//ラスタライザの設定
-	//pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;	//カリングしない
-	pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;	//背面をカリング
-	pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;	//ポリゴン塗りつぶし
-	pipelineDesc.RasterizerState.DepthClipEnable = true;	//深度クリッピングを有効に
+	////シェーダをパイプラインに設定
+	//pipelineDesc.VS.pShaderBytecode = shader.vsBlob->GetBufferPointer();
+	//pipelineDesc.VS.BytecodeLength = shader.vsBlob->GetBufferSize();
+	//pipelineDesc.PS.pShaderBytecode = shader.psBlob->GetBufferPointer();
+	//pipelineDesc.PS.BytecodeLength = shader.psBlob->GetBufferSize();
 
-	//ブレンドステートを有効に
-	//pipelineDesc.BlendState.RenderTarget[0].RenderTargetWriteMask =
-	//	D3D12_COLOR_WRITE_ENABLE_ALL;	//RGBA全てのチャンネルを描画
+	////サンプルマスクの設定
+	//pipelineDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;	//標準設定
 
-	//レンダーターゲットのブレンド設定　ブレンドを細かく設定できるようにする
-	D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = pipelineDesc.BlendState.RenderTarget[0];
-	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;	//RGBA全てのチャンネルを描画
+	////ラスタライザの設定
+	////pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;	//カリングしない
+	//pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;	//背面をカリング
+	//pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;	//ポリゴン塗りつぶし
+	//pipelineDesc.RasterizerState.DepthClipEnable = true;	//深度クリッピングを有効に
 
-	//ブレンド設定
-	//共通設定(アルファ値)
-	blenddesc.BlendEnable = true;					//ブレンドを有効にする
-	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;	//加算
-	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;		//ソースの値を100%使う
-	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;	//デストの値を0  %使う
-	////加算合成
-	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;	//加算
-	//blenddesc.SrcBlend = D3D12_BLEND_ONE;		//ソースの値を100%使う
-	//blenddesc.DestBlend = D3D12_BLEND_ONE;	//デストの値を100%使う
-	////減算合成
-	//blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;	//デストからソースを減算
-	//blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
-	//blenddesc.DestBlend = D3D12_BLEND_ONE;				//デストの値を100%使う
-	////色反転
-	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				//加算
-	//blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	//1.0f-デストカラーの値
-	//blenddesc.DestBlend = D3D12_BLEND_ZERO;				//使わない
-	//半透明合成
-	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
-	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	////ブレンドステートを有効に
+	////pipelineDesc.BlendState.RenderTarget[0].RenderTargetWriteMask =
+	////	D3D12_COLOR_WRITE_ENABLE_ALL;	//RGBA全てのチャンネルを描画
 
-	//頂点レイアウトの設定
-	pipelineDesc.InputLayout.pInputElementDescs = vertex->inputLayout;
-	pipelineDesc.InputLayout.NumElements = _countof(vertex->inputLayout);
+	////レンダーターゲットのブレンド設定　ブレンドを細かく設定できるようにする
+	//D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = pipelineDesc.BlendState.RenderTarget[0];
+	//blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;	//RGBA全てのチャンネルを描画
 
-	//図形の形状設定
-	pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	////ブレンド設定
+	////共通設定(アルファ値)
+	//blenddesc.BlendEnable = true;					//ブレンドを有効にする
+	//blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;	//加算
+	//blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;		//ソースの値を100%使う
+	//blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;	//デストの値を0  %使う
+	//////加算合成
+	////blenddesc.BlendOp = D3D12_BLEND_OP_ADD;	//加算
+	////blenddesc.SrcBlend = D3D12_BLEND_ONE;		//ソースの値を100%使う
+	////blenddesc.DestBlend = D3D12_BLEND_ONE;	//デストの値を100%使う
+	//////減算合成
+	////blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;	//デストからソースを減算
+	////blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
+	////blenddesc.DestBlend = D3D12_BLEND_ONE;				//デストの値を100%使う
+	//////色反転
+	////blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				//加算
+	////blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	//1.0f-デストカラーの値
+	////blenddesc.DestBlend = D3D12_BLEND_ZERO;				//使わない
+	////半透明合成
+	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
+	//blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	//blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 
-	//その他の設定
-	pipelineDesc.NumRenderTargets = 1;	//描画対象の数
-	pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	//0~255指定のRGBA
-	pipelineDesc.SampleDesc.Count = 1;	//1ピクセルにつき1回サンプリング
+	////頂点レイアウトの設定
+	//pipelineDesc.InputLayout.pInputElementDescs = vertex->inputLayout;
+	//pipelineDesc.InputLayout.NumElements = _countof(vertex->inputLayout);
+
+	////図形の形状設定
+	//pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+	////その他の設定
+	//pipelineDesc.NumRenderTargets = 1;	//描画対象の数
+	//pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	//0~255指定のRGBA
+	//pipelineDesc.SampleDesc.Count = 1;	//1ピクセルにつき1回サンプリング
 
 	//リソース設定
 	D3D12_RESOURCE_DESC depthResorceDesc{};
@@ -139,10 +143,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	);
 
 	//デプスステンシルステートの設定
-	pipelineDesc.DepthStencilState.DepthEnable = true;	//深度テストを行う
-	pipelineDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;	//書き込み許可
-	pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-	pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	pipeline->Desc.DepthStencilState.DepthEnable = true;	//深度テストを行う
+	pipeline->Desc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;	//書き込み許可
+	pipeline->Desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	pipeline->Desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
 	//デスクリプタレンジの設定
 	D3D12_DESCRIPTOR_RANGE descriptorRange{};
@@ -209,11 +213,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	);
 	assert(SUCCEEDED(result));
 	//パイプラインにルートシグネチャをセット
-	pipelineDesc.pRootSignature = rootSignature.Get();
+	pipeline->Desc.pRootSignature = rootSignature.Get();
 
 	//パイプラインステートの生成
 	ComPtr<ID3D12PipelineState> pipelineState;
-	result = dx->GetDevice()->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(&pipelineState));
+	result = dx->GetDevice()->CreateGraphicsPipelineState(&pipeline->Desc, IID_PPV_ARGS(&pipelineState));
 	assert(SUCCEEDED(result));
 
 	//定数バッファ

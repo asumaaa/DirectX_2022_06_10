@@ -13,29 +13,17 @@
 #include "VertBuff.h"
 #include "IndexBuff.h"
 #include "Shader.h"
+#include "Vertex.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
-//頂点データ構造体
-struct Vertex
-{
-	XMFLOAT3 pos;	//座標
-	XMFLOAT3 normalize;	//法線ベクトル
-	XMFLOAT2 uv;	//uv座標
-};
-
-class Ver
+class Pipeline
 {
 public:
-	static Ver* GetInstance();
-	void Create(XMFLOAT3 size);
+	void Initialize(Shader shader,Ver* vertex);
 public:
-	Vertex vertices[24];
-	unsigned short indices[24];
-	UINT sizeVB;
-	UINT sizeIB;
-	D3D12_INPUT_ELEMENT_DESC inputLayout[3];//頂点レイアウト	xyz座標、法線ベクトル、uv座標の順番
-
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC Desc{};//グラフィックスパイプラインの各ステージの設定をする構造体
+	D3D12_RENDER_TARGET_BLEND_DESC& blenddesc;//レンダーターゲットのブレンド設定
 };
 
