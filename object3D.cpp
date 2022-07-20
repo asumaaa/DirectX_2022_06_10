@@ -202,3 +202,7 @@ void DrawTex3d(texData* tex, ComPtr<ID3D12GraphicsCommandList> commandList)
 	//•`‰æƒRƒ}ƒ“ƒh
 	commandList->SetGraphicsRootDescriptorTable(1, tex->srvGpuHandle);
 }
+
+void square::Initialize()
+{
+}

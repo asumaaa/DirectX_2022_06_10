@@ -9,6 +9,7 @@
 #include "assert.h"
 #include "DirectXTex.h"
 #include "wrl.h"
+#include "vertex2.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -70,3 +71,13 @@ struct texData
 void InitializeTexData(texData* tex,const wchar_t* szFile, ComPtr<ID3D12Device> device, int texNum);
 //‰æ‘œƒf[ƒ^•`‰æ
 void DrawTex3d(texData* tex,ComPtr<ID3D12GraphicsCommandList> commandList);
+
+
+class square
+{
+public:
+	void Initialize();
+	void Update();
+public:
+	vertex2 vertex;
+};
