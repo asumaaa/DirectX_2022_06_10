@@ -21,10 +21,10 @@ struct Vertex
 	XMFLOAT2 uv;	//uvç¿ïW
 };
 
-class Ver
+class vertex2
 {
 public:
-	static Ver* GetInstance();
+	static vertex2* GetInstance();
 	void Initialize(XMFLOAT3 size);
 public:
 	Vertex vertices[24];

@@ -147,6 +147,7 @@
     <ClCompile Include="Masage.cpp" />
     <ClCompile Include="object3D.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="vertex2.cpp" />
     <ClCompile Include="WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="Masage.h" />
     <ClInclude Include="object3D.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="vertex2.h" />
     <ClInclude Include="WinApp.h" />
   </ItemGroup>
   <ItemGroup>

@@ -24,14 +24,6 @@ struct ConstBufferDataTransform
 	XMMATRIX mat;
 };
 
-//頂点データ構造体
-struct Vertex
-{
-	XMFLOAT3 pos;	//座標
-	XMFLOAT3 normalize;	//法線ベクトル
-	XMFLOAT2 uv;	//uv座標
-};
-
 //3Dオブジェクト型
 struct Object3d
 {
