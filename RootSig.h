@@ -8,7 +8,6 @@
 #include "IndexBuff.h"
 #include "Shader.h"
 #include "Depth.h"
-#include "RootSig.h"
 
 #include "string"
 #include "DirectXMath.h"
@@ -24,20 +23,14 @@ using namespace Microsoft::WRL;
 //#pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dinput8.lib")
 
-class Pipe
+class RootSig
 {
 public:
-	static Pipe* GetInstance();
-	void Initialize(Shader shader_, RootSig rootSig_,Ver* vertex_, DirectXIni* dx_);
-	void Update();
+	static RootSig* GetInstance();
+	void Initialize(Shader shader_,DirectXIni* dx_);
 public:
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc{};	//グラフィックスパイプライン
-	//ComPtr<ID3D12PipelineState> pipelineState;			//パイプラインステート
-	Shader shader;
-	IndexBuff indexBuff;
-	VertBuff vertBuff;
-	Ver* vertex;
-	RootSig rootSig;
+	ComPtr<ID3D12RootSignature> rootSignature;
 	DirectXIni* dx;
+	Shader shader;
 };
 

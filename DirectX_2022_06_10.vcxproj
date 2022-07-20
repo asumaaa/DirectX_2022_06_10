@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Depth.cpp" />
     <ClCompile Include="DirectXIni.cpp" />
     <ClCompile Include="IndexBuff.cpp" />
     <ClCompile Include="input.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="Masage.cpp" />
     <ClCompile Include="object3D.cpp" />
     <ClCompile Include="Pipe.cpp" />
+    <ClCompile Include="RootSig.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertBuff.cpp" />
@@ -155,6 +157,7 @@
     <ClCompile Include="WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Depth.h" />
     <ClInclude Include="DirectXIni.h" />
     <ClInclude Include="IndexBuff.h" />
     <ClInclude Include="input.h" />
@@ -162,6 +165,7 @@
     <ClInclude Include="Masage.h" />
     <ClInclude Include="object3D.h" />
     <ClInclude Include="Pipe.h" />
+    <ClInclude Include="RootSig.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VertBuff.h" />
