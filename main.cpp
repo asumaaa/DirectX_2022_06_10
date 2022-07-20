@@ -25,9 +25,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	Ver* vertex = nullptr;
 	vertex = Ver::GetInstance();
 	vertex->Initialize(XMFLOAT3(5.0, 5.0, 5.0));
-	IndexBuff indexBuff(vertex, dx);
-	VertBuff vertBuff(vertex, dx);
+	IndexBuff indexBuff;
+	indexBuff.GetInstance();
+	indexBuff.Initialize(vertex, dx);
+	VertBuff vertBuff;
+	vertBuff.GetInstance();
+	vertBuff.Initialize(vertex, dx);
 	Shader shader;
+	shader.GetInstance();
 	shader.compileVs(L"BasicVS.hlsl");
 	shader.compilePs(L"BasicPS.hlsl");
 
@@ -102,6 +107,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	depthResorceDesc.Format = DXGI_FORMAT_D32_FLOAT;	//深度値フォーマット
 	depthResorceDesc.SampleDesc.Count = 1;
 	depthResorceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;	//デプスステンシル
+
 	//震度値用ヒーププロパティ
 	D3D12_HEAP_PROPERTIES depthHeapProp{};
 	depthHeapProp.Type = D3D12_HEAP_TYPE_DEFAULT;

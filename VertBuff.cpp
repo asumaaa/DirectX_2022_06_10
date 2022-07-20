@@ -1,6 +1,12 @@
 #include "VertBuff.h"
 
-VertBuff::VertBuff(Ver* vertex, DirectXIni* dx_)
+VertBuff* VertBuff::GetInstance()
+{ 
+	static VertBuff instance;
+	return &instance;
+}
+
+void VertBuff::Initialize(Ver* vertex, DirectXIni* dx_)
 {
 	HRESULT result;
 

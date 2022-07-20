@@ -5,7 +5,8 @@
 class VertBuff
 {
 public:
-	VertBuff(Ver *vertex,DirectXIni* dx_);
+	static VertBuff* GetInstance();
+	void Initialize(Ver *vertex,DirectXIni* dx_);
 	D3D12_VERTEX_BUFFER_VIEW *GetVbView() { return &vbView; }
 public:
 	ComPtr<ID3D12Resource> vertBuff;

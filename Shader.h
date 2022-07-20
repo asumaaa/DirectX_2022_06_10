@@ -14,6 +14,7 @@ using namespace Microsoft::WRL;
 class Shader
 {
 public:
+	static Shader* GetInstance();
 	void compileVs(const wchar_t* file);
 	void compilePs(const wchar_t* file);
 public:

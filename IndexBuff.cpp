@@ -1,6 +1,6 @@
 #include "IndexBuff.h"
 
-IndexBuff::IndexBuff(Ver* vertex, DirectXIni* dx_)
+void IndexBuff::Initialize(Ver* vertex, DirectXIni* dx_)
 {
 	HRESULT result;
 
@@ -40,4 +40,10 @@ IndexBuff::IndexBuff(Ver* vertex, DirectXIni* dx_)
 	ibView.BufferLocation = indexBuff->GetGPUVirtualAddress();
 	ibView.Format = DXGI_FORMAT_R16_UINT;
 	ibView.SizeInBytes = vertex->sizeIB;
+}
+
+IndexBuff* IndexBuff::GetInstance()
+{
+	static IndexBuff instance;
+	return &instance;
 }

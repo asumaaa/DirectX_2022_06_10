@@ -1,5 +1,11 @@
 #include "Shader.h"
 
+Shader* Shader::GetInstance()
+{
+	static Shader instance;
+	return &instance;
+}
+
 void Shader::compileVs(const wchar_t* file)
 {
 	ID3DBlob* vsBlob_ = nullptr;	//頂点シェーダーオブジェクト
