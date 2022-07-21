@@ -21,6 +21,11 @@ struct Vertex
 	XMFLOAT2 uv;	//uv座標
 };
 
+struct Indices
+{
+	int num;
+};
+
 class Ver
 {
 public:
@@ -34,3 +39,15 @@ public:
 	D3D12_INPUT_ELEMENT_DESC inputLayout[3];//頂点レイアウト	xyz座標、法線ベクトル、uv座標の順番
 };
 
+class Ver2
+{
+public:
+	static Ver2* GetInstance();
+	void Initialize(XMFLOAT3 size);
+public:
+	Vertex vertices[12];
+	unsigned short indices[12];
+	UINT sizeVB;
+	UINT sizeIB;
+	D3D12_INPUT_ELEMENT_DESC inputLayout[3];//頂点レイアウト	xyz座標、法線ベクトル、uv座標の順番
+};

@@ -57,6 +57,13 @@ void Depth::Initialize(DirectXIni* dx_)
 	);
 }
 
-void Depth::Update()
+void Depth::Update(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle)
 {
+	dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
+	dx->GetCommandList()->OMSetRenderTargets(1, &rtvHandle, false, &dsvHandle);
+}
+
+void Depth::Update2()
+{
+	dx->GetCommandList()->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }

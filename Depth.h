@@ -21,9 +21,11 @@ class Depth
 public:
 	static Depth* GetInstance();
 	void Initialize(DirectXIni* dx_);
-	void Update();
+	void Update(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle);
+	void Update2();
 public:
-	ComPtr<ID3D12DescriptorHeap> dsvHeap;
 	DirectXIni* dx;
+	ComPtr<ID3D12DescriptorHeap> dsvHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 };
 

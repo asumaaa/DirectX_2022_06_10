@@ -10,6 +10,8 @@
 #include "Pipe.h"
 #include "Depth.h"
 #include "RootSig.h"
+#include "Square2.h"
+#include "Triangle.h"
 
 #include "string"
 #include "DirectXMath.h"

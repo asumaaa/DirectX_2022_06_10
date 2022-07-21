@@ -151,7 +151,9 @@
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="RootSig.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Square2.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="VertBuff.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="WinApp.cpp" />
@@ -167,7 +169,9 @@
     <ClInclude Include="Pipe.h" />
     <ClInclude Include="RootSig.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Square2.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Triangle.h" />
     <ClInclude Include="VertBuff.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="WinApp.h" />

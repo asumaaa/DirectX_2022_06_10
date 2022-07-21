@@ -21,31 +21,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	input->Initialize(win);
 
 #pragma region 描画処理初期化
+	Square2* square = nullptr;
+	square = Square2::GetInstance();
+	square->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f),dx);
 
-	Ver* vertex = nullptr;
-	vertex = Ver::GetInstance();
-	vertex->Initialize(XMFLOAT3(10.0, 10.0, 10.0));
-	IndexBuff indexBuff;
-	indexBuff.GetInstance();
-	indexBuff.Initialize(vertex, dx);
-	VertBuff vertBuff;
-	vertBuff.GetInstance();
-	vertBuff.Initialize(vertex, dx);
-	Shader shader;
-	shader.GetInstance();
-	shader.compileVs(L"BasicVS.hlsl");
-	shader.compilePs(L"BasicPS.hlsl");
-
-	Depth *depth = nullptr;
-	depth = Depth::GetInstance();
-	depth->Initialize(dx);
-	RootSig rootSig;
-	rootSig.GetInstance();
-	rootSig.Initialize(shader, dx);
-
-	Pipe pipe;
-	pipe.GetInstance();
-	pipe.Initialize(shader,rootSig,vertex,dx);
+	Triangle* triangle = nullptr;
+	triangle = Triangle::GetInstance();
+	triangle->Initialize(XMFLOAT3(10.0f,10.0f,10.0f),dx);
 
 	//リソース設定
 	D3D12_RESOURCE_DESC depthResorceDesc{};
@@ -92,44 +74,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		&dsvDesc,
 		dsvHeap->GetCPUDescriptorHandleForHeapStart()
 	);
-
-	//パイプラインステートの生成
-	ComPtr<ID3D12PipelineState> pipelineState;
-	result = dx->GetDevice()->CreateGraphicsPipelineState(&pipe.pipelineDesc, IID_PPV_ARGS(&pipelineState));
-	assert(SUCCEEDED(result));
-
-	//定数バッファ
-	//ヒープ設定
-	D3D12_HEAP_PROPERTIES cbHeapProp{};
-	cbHeapProp.Type = D3D12_HEAP_TYPE_UPLOAD;	//GPUの転送用
-	//リソース設定
-	D3D12_RESOURCE_DESC cbResourceDesc{};
-	cbResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	cbResourceDesc.Width = (sizeof(ConstBufferDataMaterial) + 0xff) & ~0xff;	//256バイトアラインメント
-	cbResourceDesc.Height = 1;
-	cbResourceDesc.DepthOrArraySize = 1;
-	cbResourceDesc.MipLevels = 1;
-	cbResourceDesc.SampleDesc.Count = 1;
-	cbResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-
-	ComPtr<ID3D12Resource> constBuffMaterial;
-	//定数バッファの生成
-	result = dx->GetDevice()->CreateCommittedResource(
-		&cbHeapProp,	//ヒープ設定
-		D3D12_HEAP_FLAG_NONE,
-		&cbResourceDesc,	//リソース設定
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&constBuffMaterial)
-	);
-	assert(SUCCEEDED(result));
-
-	//定数バッファのマッピング
-	ConstBufferDataMaterial* constMapMaterial = nullptr;
-	result = constBuffMaterial->Map(0, nullptr, (void**)&constMapMaterial);	//マッピング
-	assert(SUCCEEDED(result));
-	//値を書き込むと自動的に転送される
-	constMapMaterial->color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	//読み込む画像の数
 	const size_t metadataCount = 3;
@@ -245,45 +189,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		dx->GetCommandList()->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		// 4. 描画コマンド
-
-		//ビューポート設定コマンド
-		D3D12_VIEWPORT viewport{};
-		viewport.Width = window_width;
-		viewport.Height = window_height;
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
-		//ビューポート設定コマンドをコマンドリストに積む
-		dx->GetCommandList()->RSSetViewports(1, &viewport);
-
-		//シザー矩形
-		D3D12_RECT scissorRect{};
-		//切り抜き座標
-		scissorRect.left = 0;
-		scissorRect.right = scissorRect.left + window_width;
-		scissorRect.top = 0;
-		scissorRect.bottom = scissorRect.top + window_height;
-		//シザー矩形設定コマンドをコマンドリストに積む
-		dx->GetCommandList()->RSSetScissorRects(1, &scissorRect);
-
-		//パイプラインステートをセット
-		dx->GetCommandList()->SetPipelineState(pipelineState.Get());
-		//ルートシグネチャをセット
-		dx->GetCommandList()->SetGraphicsRootSignature(rootSig.rootSignature.Get());
-
-		//プリミティブ形状の設定コマンド
-		dx->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	//三角形リスト
-		//定数バッファビュー(CBV)の設定コマンド
-		dx->GetCommandList()->SetGraphicsRootConstantBufferView(0, constBuffMaterial->GetGPUVirtualAddress());
+		square->Update();
+		triangle->Update();
 
 		//seikinを描画
 		texture[2].Draw();
-		DrawObject3d(&object3ds[0], dx->GetCommandList(), vertBuff.vbView, indexBuff.ibView, _countof(vertex->indices));
+		DrawObject3d(&object3ds[0], dx->GetCommandList(), square->vertBuff.vbView, square->indexBuff.ibView, _countof(square->vertex->indices));
 
 		//hikakinを描画
 		texture[1].Draw();
-		DrawObject3d(&object3ds[1], dx->GetCommandList(), vertBuff.vbView, indexBuff.ibView, _countof(vertex->indices));
+		DrawObject3d(&object3ds[1], dx->GetCommandList(), triangle->vertBuff.vbView, triangle->indexBuff.ibView, _countof(triangle->vertex->indices));
 
 		// 5. リソースバリアを書き込み禁止に
 		barrierDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;	//描画状態から
