@@ -28,7 +28,7 @@ public:
 	void Initialize(XMFLOAT3 size);
 public:
 	Vertex vertices[24];
-	unsigned short indices[24];
+	unsigned short indices[36];
 	UINT sizeVB;
 	UINT sizeIB;
 	D3D12_INPUT_ELEMENT_DESC inputLayout[3];//頂点レイアウト	xyz座標、法線ベクトル、uv座標の順番

@@ -69,6 +69,10 @@ void Ver::Initialize(XMFLOAT3 size)
 	for (int i = 0; i < 24; i++)
 	{
 		vertices[i] = v[i];
+	}
+
+	for (int i = 0; i < 36; i++)
+	{
 		indices[i] = in[i];
 	}
 
