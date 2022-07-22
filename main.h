@@ -12,6 +12,7 @@
 #include "RootSig.h"
 #include "Square2.h"
 #include "Triangle.h"
+#include "math.h"
 
 #include "string"
 #include "DirectXMath.h"
@@ -33,5 +34,15 @@ HRESULT result;
 //ÉJÉÅÉâÇÃâÒì]äp
 float angle = 0.0f;
 
-//ç¿ïW
-XMFLOAT3 position = { 0.0f,0.0f,0.0f };
+////ç¿ïW
+//XMFLOAT3 position = { 0.0f,0.0f,0.0f };
+//
+//enum MODE
+//{
+//	colorChange,
+//	vertexColor
+//};
+//
+//MODE mode = colorChange;
+//
+//XMFLOAT4 color = { 0,0,0,1 };

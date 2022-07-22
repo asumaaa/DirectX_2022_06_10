@@ -81,8 +81,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	Texture texture[metadataCount];
 	//初期化
 	texture[0].Initialize(L"Resources/texture.jpg", dx, 0);
-	texture[1].Initialize(L"Resources/texture2.jpg", dx, 1);
-	texture[2].Initialize(L"Resources/texture3.jpg", dx, 2);
 
 
 	//3Dオブジェクトの数
@@ -193,11 +191,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		triangle->Update();
 
 		//seikinを描画
-		texture[2].Draw();
-		DrawObject3d(&object3ds[0], dx->GetCommandList(), square->vertBuff.vbView, square->indexBuff.ibView, _countof(square->vertex->indices));
 
 		//hikakinを描画
-		texture[1].Draw();
+		texture[0].Draw();
 		DrawObject3d(&object3ds[1], dx->GetCommandList(), triangle->vertBuff.vbView, triangle->indexBuff.ibView, _countof(triangle->vertex->indices));
 
 		// 5. リソースバリアを書き込み禁止に
