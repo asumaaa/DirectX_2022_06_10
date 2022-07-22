@@ -38,10 +38,10 @@ XMFLOAT3 position = { 0.0f,0.0f,0.0f };
 
 enum MODE
 {
-	colorCahnge,
+	colorChange,
 	vertexColor
 };
 
-MODE mode;
+MODE mode = colorChange;
 
 XMFLOAT4 color = { 0,0,0,1 };

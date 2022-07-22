@@ -166,6 +166,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		}
 
+		//カメラを移動
+		if (input->key[DIK_R] || input->key[DIK_F] || input->key[DIK_T] || input->key[DIK_G] || input->key[DIK_Y] || input->key[DIK_H])
+		{
+			if (input->key[DIK_R]) { eye.y += 1.0f; }
+			else if (input->key[DIK_F]) { eye.y -= 1.0f; }
+			if (input->key[DIK_T]) { eye.x += 1.0f; }
+			else if (input->key[DIK_G]) { eye.x -= 1.0f; }
+			if (input->key[DIK_Y]) { eye.z += 1.0f; }
+			else if (input->key[DIK_H]) { eye.z -= 1.0f; }
+		}
+		matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+
+		if (input->key[DIK_1])
+		{
+			mode = colorChange;
+		}
+		if (input->key[DIK_2])
+		{
+			mode = vertexColor;
+		}
+
 		//バックバッファの番号を取得(2つなので0番か1番)
 		UINT bbIndex = dx->GetSwapChain()->GetCurrentBackBufferIndex();
 
