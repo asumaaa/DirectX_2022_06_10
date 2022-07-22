@@ -79,9 +79,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//画像
 	Texture texture[metadataCount];
 	//初期化
-	texture[0].Initialize(L"Resources/texture.jpg", dx, 0);
-	texture[1].Initialize(L"Resources/texture2.jpg", dx, 1);
-	texture[2].Initialize(L"Resources/texture3.jpg", dx, 2);
+	texture[0].Initialize(dx, 0);
+	//texture[1].Initialize(L"Resources/texture2.jpg", dx, 1);
+	//texture[2].Initialize(L"Resources/texture3.jpg", dx, 2);
 
 
 	//3Dオブジェクトの数
@@ -209,8 +209,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		dx->GetCommandList()->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		// 4. 描画コマンド
-		square->Update();
-		triangle->Update();
 
 		if (mode == vertexColor)
 		{
@@ -220,6 +218,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		{
 			triangle->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f), dx, L"BasicPS.hlsl");
 		}
+		square->Update();
+		triangle->Update();
 
 		if (mode == colorChange)
 		{
