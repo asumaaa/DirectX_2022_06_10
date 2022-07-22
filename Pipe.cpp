@@ -1,15 +1,15 @@
 #include "Pipe.h"
 
-Pipe *Pipe::GetInstance()
+Pipe* Pipe::GetInstance()
 {
 	static Pipe instance;
 	return &instance;
 }
 
-void Pipe::Initialize(Shader shader_, RootSig rootSig_, Ver* vertex_,DirectXIni* dx_)
+void Pipe::Initialize(Shader shader_, RootSig rootSig_, Ver* vertex_, DirectXIni* dx_)
 {
 	HRESULT result;
-    shader = shader_;
+	shader = shader_;
 	vertex = vertex_;
 	rootSig = rootSig_;
 
@@ -28,18 +28,9 @@ void Pipe::Initialize(Shader shader_, RootSig rootSig_, Ver* vertex_,DirectXIni*
 	pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;	//ポリゴン塗りつぶし
 	pipelineDesc.RasterizerState.DepthClipEnable = true;	//深度クリッピングを有効に
 
-	////ブレンドステートを有効に
-	//pipelineDesc.BlendState.RenderTarget[0].RenderTargetWriteMask =
-	//	D3D12_COLOR_WRITE_ENABLE_ALL;	//RGBA全てのチャンネルを描画
-	//レンダーターゲットのブレンド設定
-	D3D12_RENDER_TARGET_BLEND_DESC &blenddesc = pipelineDesc.BlendState.RenderTarget[0];
-	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-
-	//共通設定
-	blenddesc.BlendEnable = true;
-	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;
-	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+	//ブレンドステートを有効に
+	pipelineDesc.BlendState.RenderTarget[0].RenderTargetWriteMask =
+		D3D12_COLOR_WRITE_ENABLE_ALL;	//RGBA全てのチャンネルを描画
 
 	//頂点レイアウトの設定
 	pipelineDesc.InputLayout.pInputElementDescs = vertex->inputLayout;
@@ -122,35 +113,3 @@ void Pipe::Initialize(Shader shader_, RootSig rootSig_, Ver2* vertex_, DirectXIn
 void Pipe::Update()
 {
 }
-
-//void Pipe::blendAdd()
-//{
-//	/*D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = pipelineDesc.BlendState.RenderTarget[0];
-//	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
-//	blenddesc.SrcBlend = D3D12_BLEND_ONE;
-//	blenddesc.DestBlend = D3D12_BLEND_ZERO;*/
-//}
-//
-//void Pipe::blendSub()
-//{
-//	/*D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = pipelineDesc.BlendState.RenderTarget[0];
-//	blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
-//	blenddesc.SrcBlend = D3D12_BLEND_ONE;
-//	blenddesc.DestBlend = D3D12_BLEND_ONE;*/
-//}
-//
-//void Pipe::blendInv()
-//{
-//	/*D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = pipelineDesc.BlendState.RenderTarget[0];
-//	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
-//	blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
-//	blenddesc.DestBlend = D3D12_BLEND_ZERO;*/
-//}
-//
-//void Pipe::blendAlpha()
-//{
-//	/*D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = pipelineDesc.BlendState.RenderTarget[0];
-//	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
-//	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-//	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;*/
-//}
