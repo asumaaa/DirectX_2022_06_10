@@ -192,13 +192,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		square->Update();
 		triangle->Update();
 
-		//seikinを描画
-		texture[2].Draw();
-		DrawObject3d(&object3ds[0], dx->GetCommandList(), square->vertBuff.vbView, square->indexBuff.ibView, _countof(square->vertex->indices));
+		if (mode == vertexColor)
+		{
+			triangle->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f), dx, L"BasicPS2.hlsl");
+		}
+		else
+		{
+			triangle->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f), dx, L"BasicPS.hlsl");
+		}
 
-		//hikakinを描画
-		texture[1].Draw();
-		DrawObject3d(&object3ds[1], dx->GetCommandList(), triangle->vertBuff.vbView, triangle->indexBuff.ibView, _countof(triangle->vertex->indices));
+		if (mode == colorChange)
+		{
+			color.x += 0.01;
+			color.y += 0.03;
+			color.z += 0.02;
+			texture[0].SetImageData(XMFLOAT4(sin(color.x), cos(color.y), tan(color.z), color.w));
+		}
+
+
+		texture[0].Draw();
+		DrawObject3d(&object3ds[0], dx->GetCommandList(), triangle->vertBuff.vbView, triangle->indexBuff.ibView, _countof(triangle->vertex->indices));
 
 		// 5. リソースバリアを書き込み禁止に
 		barrierDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;	//描画状態から
