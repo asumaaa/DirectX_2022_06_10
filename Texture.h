@@ -38,7 +38,7 @@ public:
 	void Initialize(const wchar_t* szFile,DirectXIni *dx,int texNum);
 	void Initialize(DirectXIni* dx, int texNum);
 	void Draw();
-	void SetImagaData(XMFLOAT4 color);
+	void SetImageData(XMFLOAT4 color);
 
 	//ÉQÉbÉ^Å[
 	ID3D12Resource* GetTexBuff() { return texBuff.Get(); }

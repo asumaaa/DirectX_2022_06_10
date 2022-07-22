@@ -233,7 +233,7 @@ void Texture::Draw()
 	dx_->GetCommandList()->SetGraphicsRootDescriptorTable(1, srvGpuHandle);
 }
 
-void Texture::SetImagaData(XMFLOAT4 color)
+void Texture::SetImageData(XMFLOAT4 color)
 {
 	HRESULT result;
 	for (size_t i = 0; i < imageDataCount; i++)

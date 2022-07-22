@@ -27,7 +27,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	Triangle* triangle = nullptr;
 	triangle = Triangle::GetInstance();
-	triangle->Initialize(XMFLOAT3(10.0f,10.0f,10.0f),dx);
 
 	//リソース設定
 	D3D12_RESOURCE_DESC depthResorceDesc{};
@@ -80,9 +79,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//画像
 	Texture texture[metadataCount];
 	//初期化
-	texture[0].Initialize(L"Resources/texture.jpg", dx, 0);
+	/*texture[0].Initialize(L"Resources/texture.jpg", dx, 0);
 	texture[1].Initialize(L"Resources/texture2.jpg", dx, 1);
-	texture[2].Initialize(L"Resources/texture3.jpg", dx, 2);
+	texture[2].Initialize(L"Resources/texture3.jpg", dx, 2);*/
+	texture[0].Initialize(dx, 0);
+	texture[1].Initialize(dx, 1);
 
 
 	//3Dオブジェクトの数
@@ -163,7 +164,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			else if (input->key[DIK_DOWN]) { object3ds[0].position.z -= 1.0f; }
 			if (input->key[DIK_RIGHT]) { object3ds[0].position.x += 1.0f; }
 			else if (input->key[DIK_LEFT]) { object3ds[0].position.x -= 1.0f; }
+		}
 
+		//カメラを移動
+		if (input->key[DIK_R] || input->key[DIK_F] || input->key[DIK_T] || input->key[DIK_G] || input->key[DIK_Y] || input->key[DIK_H])
+		{
+			if (input->key[DIK_R]) { eye.y  += 1.0f; }
+			else if (input->key[DIK_F]) { eye.y -= 1.0f; }
+			if (input->key[DIK_T]) { eye.x += 1.0f; }
+			else if (input->key[DIK_G]) { eye.x -= 1.0f; }
+			if (input->key[DIK_Y]) { eye.z += 1.0f; }
+			else if (input->key[DIK_H]) { eye.z -= 1.0f; }
+		}
+		matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+
+		if (input->key[DIK_1])
+		{
+			mode = colorChange;
+		}
+		if (input->key[DIK_2])
+		{
+			mode = vertexColor;
 		}
 
 		//バックバッファの番号を取得(2つなので0番か1番)
@@ -192,13 +213,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		square->Update();
 		triangle->Update();
 
-		//seikinを描画
-		texture[2].Draw();
-		DrawObject3d(&object3ds[0], dx->GetCommandList(), square->vertBuff.vbView, square->indexBuff.ibView, _countof(square->vertex->indices));
+		if (mode == vertexColor)
+		{
+			triangle->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f), dx,L"BasicPS2.hlsl");
+		}
+		else
+		{
+			triangle->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f), dx, L"BasicPS.hlsl");
+		}
 
-		//hikakinを描画
-		texture[1].Draw();
-		DrawObject3d(&object3ds[1], dx->GetCommandList(), triangle->vertBuff.vbView, triangle->indexBuff.ibView, _countof(triangle->vertex->indices));
+		if (mode == colorChange)
+		{
+			color.x += 0.01;
+			color.y += 0.03;
+			color.z += 0.02;
+			texture[0].SetImageData(XMFLOAT4(sin(color.x), cos(color.y), tan(color.z), color.w));
+		}
+
+
+		texture[0].Draw();
+		DrawObject3d(&object3ds[0], dx->GetCommandList(), triangle->vertBuff.vbView, triangle->indexBuff.ibView, _countof(triangle->vertex->indices));
 
 		// 5. リソースバリアを書き込み禁止に
 		barrierDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;	//描画状態から
