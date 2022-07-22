@@ -27,7 +27,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	Triangle* triangle = nullptr;
 	triangle = Triangle::GetInstance();
-	triangle->Initialize(XMFLOAT3(10.0f,10.0f,10.0f),dx);
 
 	//ÉäÉ\Å[ÉXê›íË
 	D3D12_RESOURCE_DESC depthResorceDesc{};

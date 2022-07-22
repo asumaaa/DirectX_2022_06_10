@@ -12,7 +12,7 @@ class Triangle
 {
 public:
 	static Triangle* GetInstance();
-	void Initialize(XMFLOAT3 size, DirectXIni* dx_);
+	void Initialize(XMFLOAT3 size, DirectXIni* dx_, const wchar_t* file);
 	void Update();
 public:
 	Ver2* vertex = nullptr;
