@@ -36,7 +36,9 @@ class Texture
 public:
 	static Texture* GetInstance();
 	void Initialize(const wchar_t* szFile,DirectXIni *dx,int texNum);
+	void Initialize(DirectXIni* dx, int texNum);
 	void Draw();
+	void SetImagaData(XMFLOAT4 color);
 
 	//ゲッター
 	ID3D12Resource* GetTexBuff() { return texBuff.Get(); }
@@ -53,6 +55,10 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle;
 	//画像用デスクリプタヒープ
 	ComPtr<ID3D12DescriptorHeap> srvHeap;
+	const size_t textureWidth = 256;
+	const size_t textureHeight = 256;
+	const size_t imageDataCount = textureWidth * textureHeight;
+	XMFLOAT4* imageData = new XMFLOAT4[imageDataCount];
 public:
 	DirectXIni* dx_ ;
 };

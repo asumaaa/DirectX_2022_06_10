@@ -6,7 +6,7 @@ Triangle* Triangle::GetInstance()
 	return &instance;
 }
 
-void Triangle::Initialize(XMFLOAT3 size, DirectXIni* dx_)
+void Triangle::Initialize(XMFLOAT3 size, DirectXIni* dx_, const wchar_t* file)
 {
 	dx = dx_;
 	HRESULT result;
@@ -19,7 +19,7 @@ void Triangle::Initialize(XMFLOAT3 size, DirectXIni* dx_)
 	vertBuff.Initialize(vertex, dx);
 	shader.GetInstance();
 	shader.compileVs(L"BasicVS.hlsl");
-	shader.compilePs(L"BasicPS.hlsl");
+	shader.compilePs(file);
 	rootSig.GetInstance();
 	rootSig.Initialize(shader, dx);
 	pipe.GetInstance();

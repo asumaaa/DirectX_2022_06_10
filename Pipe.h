@@ -31,6 +31,10 @@ public:
 	void Initialize(Shader shader_, RootSig rootSig_, Ver* vertex_, DirectXIni* dx_);
 	void Initialize(Shader shader_, RootSig rootSig_,Ver2* vertex_, DirectXIni* dx_);
 	void Update();
+	/*void blendAdd();
+	void blendSub();
+	void blendInv();
+	void blendAlpha();*/
 public:
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc{};	//グラフィックスパイプライン
 	//ComPtr<ID3D12PipelineState> pipelineState;			//パイプラインステート

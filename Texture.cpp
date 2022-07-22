@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "Math.h"
 
 Texture* Texture::GetInstance()
 {
@@ -128,10 +129,126 @@ void Texture::Initialize(const wchar_t* szFile, DirectXIni* dx, int texNum)
 	}
 }
 
+void Texture::Initialize(DirectXIni* dx, int texNum)
+{
+	this->dx_ = dx;
+	HRESULT result;
+	UINT incrementSize = dx_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);	//デスクリプタのサイズ
+	imageData = new XMFLOAT4[imageDataCount];
+	//全ピクセルを初期化
+	for (size_t i = 0; i < imageDataCount; i++)
+	{
+		imageData[i].x = 1.0f;
+		imageData[i].y = 0.0f;
+		imageData[i].z = 0.0f;
+		imageData[i].w = 1.0f;
+	}
+
+	//テクスチャバッファ設定
+	//ヒープ設定
+	D3D12_HEAP_PROPERTIES textureHeapProp{};
+	textureHeapProp.Type = D3D12_HEAP_TYPE_CUSTOM;
+	textureHeapProp.CPUPageProperty =
+		D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
+	textureHeapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
+	//リソース設定
+	D3D12_RESOURCE_DESC textureResourceDesc{};
+	textureResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	textureResourceDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureResourceDesc.Width = textureWidth;	//幅
+	textureResourceDesc.Height = textureHeight;	//高さ
+	textureResourceDesc.DepthOrArraySize = 1;
+	textureResourceDesc.MipLevels = 1;
+	textureResourceDesc.SampleDesc.Count = 1;
+	//テクスチャバッファの生成
+	result = dx_->GetDevice()->CreateCommittedResource(
+		&textureHeapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&textureResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&texBuff)
+	);
+	//テクスチャバッファにデータ転送
+	result = texBuff->WriteToSubresource(
+		0,
+		nullptr,
+		imageData,
+		sizeof(XMFLOAT4) * textureWidth,
+		sizeof(XMFLOAT4) * imageDataCount
+		);
+
+	//デスクリプタヒープ生成
+	//SRVの最大個数
+	const size_t kMaxSRVCount = 2056;
+
+	//デスクリプタヒープの設定
+	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc{};
+	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;//シェーダーから見えるように
+	srvHeapDesc.NumDescriptors = kMaxSRVCount;
+
+	//設定をもとにSRV用デスクリプタヒープを生成
+	result = dx_->GetDevice()->CreateDescriptorHeap(
+		&srvHeapDesc,
+		IID_PPV_ARGS(&srvHeap)
+	);
+	assert(SUCCEEDED(result));
+
+	//SRVヒープの先頭ハンドルを取得
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = srvHeap->GetCPUDescriptorHandleForHeapStart();
+	//ここまで
+
+	//テクスチャーの番号が0以降の場合ハンドルを進める
+	if (texNum > 0)
+	{
+		srvHandle.ptr += (incrementSize * texNum);
+	}
+	//シェーダリソースビュー設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};	//設定構造体
+	srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	srvDesc.Shader4ComponentMapping =
+		D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	srvDesc.Texture2D.MipLevels =1;
+	//ハンドルの指す位置にシェーダリソースビュー作成
+	dx_->GetDevice()->CreateShaderResourceView(texBuff.Get(), &srvDesc, srvHandle);
+
+	//ハンドルの値を設定
+	srvGpuHandle = srvHeap->GetGPUDescriptorHandleForHeapStart();
+	//保存用変数
+	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle2 = srvHeap->GetGPUDescriptorHandleForHeapStart();
+	//テクスチャの番号が0以外の時srvGpuHandleの値を変更
+	if (texNum > 0)
+	{
+		srvGpuHandle.ptr = srvGpuHandle2.ptr + (incrementSize * texNum);
+	}
+}
+
 void Texture::Draw()
 {
 	ID3D12DescriptorHeap* ppHeaps[] = {srvHeap.Get() };
 	dx_->GetCommandList()->SetDescriptorHeaps(1, ppHeaps);
 	//描画コマンド
 	dx_->GetCommandList()->SetGraphicsRootDescriptorTable(1, srvGpuHandle);
+}
+
+void Texture::SetImagaData(XMFLOAT4 color)
+{
+	HRESULT result;
+	for (size_t i = 0; i < imageDataCount; i++)
+	{
+		imageData[i].x = color.x;
+		imageData[i].y = color.y;
+		imageData[i].z = color.z;
+		imageData[i].w = color.w;
+	}
+	//テクスチャバッファにデータ転送
+	result = texBuff->WriteToSubresource(
+		0,
+		nullptr,
+		imageData,
+		sizeof(XMFLOAT4) * textureWidth,
+		sizeof(XMFLOAT4) * imageDataCount
+	);
 }

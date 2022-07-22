@@ -119,6 +119,7 @@
       <Filter>ソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="BasicPS.hlsl" />
+    <FxCompile Include="BasicPS2.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli" />

@@ -21,13 +21,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	input->Initialize(win);
 
 #pragma region 描画処理初期化
+
 	Square2* square = nullptr;
 	square = Square2::GetInstance();
 	square->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f),dx);
-
+	//テクスチャを使用する三角形
 	Triangle* triangle = nullptr;
 	triangle = Triangle::GetInstance();
-	triangle->Initialize(XMFLOAT3(10.0f,10.0f,10.0f),dx);
+	/*Triangle* triangle2 = nullptr;
+	triangle2 = Triangle::GetInstance();
+	triangle2->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f), dx, L"BasicPS2.hlsl");*/
 
 	//リソース設定
 	D3D12_RESOURCE_DESC depthResorceDesc{};
@@ -76,17 +79,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	);
 
 	//読み込む画像の数
-	const size_t metadataCount = 3;
+	const size_t metadataCount = 4;
 	//画像
 	Texture texture[metadataCount];
 	//初期化
-	texture[0].Initialize(L"Resources/texture.jpg", dx, 0);
+	/*texture[0].Initialize(L"Resources/texture.jpg", dx, 0);
 	texture[1].Initialize(L"Resources/texture2.jpg", dx, 1);
-	texture[2].Initialize(L"Resources/texture3.jpg", dx, 2);
+	texture[2].Initialize(L"Resources/texture3.jpg", dx, 2);*/
+	texture[0].Initialize(dx, 0);
+	texture[1].Initialize(dx, 1);
+	texture[2].Initialize(dx, 2);
 
 
 	//3Dオブジェクトの数
-	const size_t kObjectCount = 2;
+	const size_t kObjectCount = 3;
 	//3Dオブジェクトの配列
 	Object3d object3ds[kObjectCount];
 
@@ -166,6 +172,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		}
 
+		//キー入力でモード変更
+		if (input->key[DIK_1])
+		{
+			mode = colorChange;
+		}
+		if (input->key[DIK_2])
+		{
+			mode = vertexColor;
+		}
+		if (input->key[DIK_3])
+		{
+			mode = alpha;
+		}
+
 		//バックバッファの番号を取得(2つなので0番か1番)
 		UINT bbIndex = dx->GetSwapChain()->GetCurrentBackBufferIndex();
 
@@ -190,15 +210,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		// 4. 描画コマンド
 		square->Update();
+
+		//モードによって読み込むシェーダを変更
+		if (mode == vertexColor)
+		{
+			triangle->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f), dx, L"BasicPS2.hlsl");
+		}
+		else
+		{
+			triangle->Initialize(XMFLOAT3(10.0f, 10.0f, 10.0f), dx, L"BasicPS.hlsl");
+		}
 		triangle->Update();
 
-		//seikinを描画
-		texture[2].Draw();
-		DrawObject3d(&object3ds[0], dx->GetCommandList(), square->vertBuff.vbView, square->indexBuff.ibView, _countof(square->vertex->indices));
-
-		//hikakinを描画
-		texture[1].Draw();
-		DrawObject3d(&object3ds[1], dx->GetCommandList(), triangle->vertBuff.vbView, triangle->indexBuff.ibView, _countof(triangle->vertex->indices));
+		//色が変わる三角形を描画
+		if (mode == colorChange)
+		{
+			color[0] += 0.01;
+			color[1] += 0.02;
+			color[2] += 0.03;
+			color[3] = 1.0f;
+			texture[0].SetImagaData(XMFLOAT4(sin(color[0]), cos(color[1]), tan(color[2]), color[3]));
+		}
+		texture[0].Draw();
+		DrawObject3d(&object3ds[0], dx->GetCommandList(), triangle->vertBuff.vbView, triangle->indexBuff.ibView, _countof(triangle->vertex->indices));
 
 		// 5. リソースバリアを書き込み禁止に
 		barrierDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;	//描画状態から

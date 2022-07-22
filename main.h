@@ -35,3 +35,14 @@ float angle = 0.0f;
 
 //座標
 XMFLOAT3 position = { 0.0f,0.0f,0.0f };
+
+//オブジェクトの色を変える変数
+float color[4] = {0,0,0,1};
+
+enum MODE {
+	colorChange,
+	vertexColor,
+	alpha
+};
+
+MODE mode = colorChange;
